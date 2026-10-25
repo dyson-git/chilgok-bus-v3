@@ -95,6 +95,14 @@
    "max_time": "19:00",
    "avg_time": "19:00",
    "sample_count": 2
+  },
+  {
+   "routeno": "급행9-3",
+   "slot_index": 5,
+   "min_time": "19:23",
+   "max_time": "19:23",
+   "avg_time": "19:23",
+   "sample_count": 1
   }
  ],
  "dongmyeong": [
@@ -232,6 +240,14 @@
    "min_time": "18:04",
    "max_time": "18:04",
    "avg_time": "18:04",
+   "sample_count": 1
+  },
+  {
+   "routeno": "급행9-3",
+   "slot_index": 7,
+   "min_time": "20:03",
+   "max_time": "20:03",
+   "avg_time": "20:03",
    "sample_count": 1
   }
  ]
