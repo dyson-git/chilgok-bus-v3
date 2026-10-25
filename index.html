@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>동명 · 학명리 버스 v3</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d47a1">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<style>
+:root { --bg:#fff; --fg:#111; --muted:#4a4f57; --card:#eef3fb; --accent:#0d47a1; --accent-fg:#fff; --warn-bg:#fff0c2; --warn-fg:#4d3600; --line:#b9c4d6; --old:#6b5a00; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0b0c0f; --fg:#f5f5f7; --muted:#b4b8c0; --card:#1a1e26; --accent:#7db3ff; --accent-fg:#06121f; --warn-bg:#4a3a08; --warn-fg:#ffe9a6; --line:#3d4452; --old:#e8c75a; }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin:0; background:var(--bg); color:var(--fg); font:20px/1.5 system-ui, -apple-system, "Noto Sans KR", "Malgun Gothic", sans-serif; }
+main { max-width:560px; margin:0 auto; padding:10px 16px calc(32px + env(safe-area-inset-bottom)); }
+.app-title { display:flex; justify-content:space-between; align-items:baseline; margin:4px 2px 10px; color:var(--muted); font-size:16px; font-weight:700; }
+h2 { font-size:24px; margin:0; }
+.card { background:var(--card); border-radius:16px; padding:16px; margin-bottom:16px; cursor:pointer; outline-offset:3px; }
+.card:focus-visible { outline:3px solid var(--accent); }
+.sub { color:var(--muted); font-size:17px; margin:2px 0 10px; }
+.bus { padding:10px 0 8px; border-top:1px solid var(--line); }
+.bus .top { display:flex; justify-content:space-between; align-items:baseline; gap:10px; font-size:30px; font-weight:800; }
+.bus .no { white-space:nowrap; }
+.bus .when { color:var(--accent); font-variant-numeric:tabular-nums; text-align:right; }
+.bus .where { color:var(--muted); font-size:17px; line-height:1.4; margin-top:2px; overflow-wrap:anywhere; }
+.bus.carried .when { color:var(--old); }
+.none { font-size:26px; padding:10px 0; border-top:1px solid var(--line); }
+.warn { background:var(--warn-bg); color:var(--warn-fg); border-radius:10px; padding:10px 12px; margin:8px 0; font-size:20px; font-weight:700; }
+.note { color:var(--muted); font-size:16px; margin:8px 0 0; }
+#refresh { width:100%; min-height:72px; font-size:28px; font-weight:800; border-radius:16px; border:0; background:var(--accent); color:var(--accent-fg); cursor:pointer; }
+#refresh:disabled { opacity:.6; cursor:default; }
+#checked { text-align:center; color:var(--muted); font-size:17px; margin:8px 0 22px; }
+.section-title { font-size:24px; margin:6px 2px 12px; }
+.fold { background:var(--card); border-radius:16px; margin-bottom:12px; }
+.fold > button { width:100%; min-height:60px; display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 16px; font:inherit; font-size:22px; font-weight:800; color:var(--fg); background:transparent; border:0; border-radius:16px; cursor:pointer; text-align:left; }
+.fold > button:focus-visible { outline:3px solid var(--accent); }
+.fold svg { width:28px; height:28px; flex:none; stroke:var(--accent); fill:none; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; transition:transform .15s; }
+.fold[data-open="true"] svg { transform:rotate(180deg); }
+.fold .body { padding:0 16px 14px; }
+.fold.small > button { font-size:17px; font-weight:700; min-height:56px; }
+.passed { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 10px; padding:0; list-style:none; }
+.passed li { background:var(--bg); border:1px solid var(--line); border-radius:999px; padding:2px 10px; font-size:17px; font-variant-numeric:tabular-nums; }
+.times { width:100%; border-collapse:collapse; font-size:23px; font-weight:800; font-variant-numeric:tabular-nums; }
+.times th { text-align:left; color:var(--muted); font-size:16px; font-weight:700; padding:4px 4px 6px; border-bottom:2px solid var(--line); }
+.times td { padding:9px 4px; border-top:1px solid var(--line); vertical-align:top; }
+.times td small { display:block; color:var(--muted); font-size:14px; font-weight:400; }
+.rt { padding:9px 0; border-top:1px solid var(--line); font-size:16px; }
+.trip { padding-left:8px; overflow-wrap:anywhere; }
+.muted { color:var(--muted); }
+.foot { color:var(--muted); font-size:14px; margin:18px 2px 0; line-height:1.5; }
+@media (prefers-reduced-motion: reduce) { .fold svg { transition:none; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="app-title"><span>동명 · 학명리 버스</span><span>v3</span></div>
+  <section class="card" id="card-dongmyeong" role="button" tabindex="0" aria-live="polite" aria-label="동명 가는 버스, 누르면 새로고침"><h2>동명 가는 버스</h2><p class="note">확인 중…</p></section>
+  <section class="card" id="card-hakmyeong" role="button" tabindex="0" aria-live="polite" aria-label="학명리 가는 버스, 누르면 새로고침"><h2>학명리 가는 버스</h2><p class="note">확인 중…</p></section>
+  <button type="button" id="refresh">새로고침</button>
+  <p id="checked" aria-live="polite"></p>
+  <h2 class="section-title">시간표</h2>
+  <div id="times"></div>
+  <p class="foot">실시간은 칠곡군 버스정보시스템(칠곡3·급행9-3은 대구 버스정보시스템)이 분 단위로 알려준 값을 초 단위로 줄여 보여줘요.
+    화면 시간은 마지막으로 받은 값과 1분 넘게 벌어지지 않아요. 못 받은 버스는 받은 시간에서 계속 줄이고 "몇 시 기준"을 붙여요.</p>
+</main>
+<script src="stops.js"></script>
+<script src="core.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

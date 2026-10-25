@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>v3 check</title></head>
+<body><pre id="out">RUNNING</pre>
+<script src="../stops.js"></script>
+<script src="../core.js"></script>
+<script>
+"use strict";
+var out = [], V = window.V3, CFG = window.V3_STOPS;
+function same(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
+function eq(name, got, want) {
+  var ok = same(got, want);
+  out.push((ok ? "PASS " : "FAIL ") + name + (ok ? "" : "\n   got:  " + JSON.stringify(got) + "\n   want: " + JSON.stringify(want)));
+}
+function yes(name, cond) { eq(name, !!cond, true); }
+function readFile(rel) {
+  try {
+    var x = new XMLHttpRequest();
+    x.open("GET", rel, false);
+    x.overrideMimeType("text/html; charset=utf-8");
+    x.send();
+    return x.status === 0 || x.status === 200 ? x.responseText : null;
+  } catch (e) { return null; }
+}
+function run(name, fn) {
+  try { fn(); } catch (e) { out.push("FAIL " + name + " threw: " + (e && e.stack || e)); }
+}
+
+// 칠곡 BIS 정류장 팝업 한 줄(실제 응답 모양 그대로: td 안에 font/b/br)
+function td(inner) { return '<td width="15%" style="vertical-align:middle;">' + inner + "</td>"; }
+function tr(id, no, name, ends, c1, c2) {
+  return '<tr id="' + id + "_" + id + '"><th width="50%" align=left><p style="x"><span style="y">' + no + '</span></p><p style="z"> ' +
+    name + '<br> <br><sub style="w">( ' + ends + ")<br></sub></p></th>" + td(c1) + td(c2) + "</tr>";
+}
+var NONE = "<font color=#0165fc><b>도착정보가<br>없습니다.</b></font> ";
+function popup(rows) { return "<table summary=검색결과><tbody>" + rows.join("") + "</tbody></table>"; }
+
+var T0 = 1761300000000;  // 아무 고정 시각(ms)
+function pick(rows, fields) { return rows.map(function (r) { return fields.map(function (f) { return r[f]; }); }); }
+
+run("parseChilgok", function () {
+  var rows = V.parseChilgok(popup([
+    tr("52710", "527", "다사_동명", "연화리2↔&nbsp;동명교통", "<font color=#0165fc><b>7</b></font><br> 정거장전 ", "<font color=#0165fc><b>10</b></font>분후<br> 도착예정"),
+    tr("칠곡330", "칠곡3", "칠곡3_동명-칠곡시장-동명-예술대-경운대-동명", "동명교통↔&nbsp;동명교통", NONE, NONE),
+    tr("9-310", "9-3", "급행9-3", "북구↔&nbsp;소보", "<b>2</b> 정거장전", "곧 도착"),
+    tr("88510", "885", "구미-동명", "구미역↔&nbsp;동명면우체국건너", "<b>3</b> 정거장전", "<b>운행대기</b>")
+  ]));
+  eq("칠곡 팝업 -> 노선 id·번호·기종점·정류장 수·분·버스 있음",
+    pick(rows, ["route_id", "route_no", "ends", "stops", "minutes", "bus"]),
+    [["52710", "527", "연화리2↔ 동명교통", 7, 10, true],
+     ["칠곡330", "칠곡3", "동명교통↔ 동명교통", null, null, false],
+     ["9-310", "9-3", "북구↔ 소보", 2, 0, true],
+     ["88510", "885", "구미역↔ 동명면우체국건너", 3, null, true]]);
+  eq("모르는 문구는 숫자로 바꾸지 않고 글자로만 남긴다(시간을 만들지 않는다)", rows[3].text, "3 정거장전 운행대기");
+  eq("빈 응답 -> 빈 목록", V.parseChilgok("<html></html>"), []);
+
+  var fx = readFile("fixtures/bis_stop_2141.html");
+  yes("저장된 실제 응답(동명면우체국)을 읽었다", fx);
+  if (fx) {
+    var real = V.parseChilgok(fx);
+    eq("실제 응답: 19개 노선, 버스는 527 하나(7정거장 10분) - bis/parse.py 결과와 같다",
+      [real.length, pick(real.filter(function (r) { return r.bus; }), ["route_id", "route_no", "ends", "stops", "minutes"])],
+      [19, [["52710", "527", "연화리2↔ 동명교통", 7, 10]]]);
+  }
+  var fx2 = readFile("fixtures/bis_stop_2479.html");
+  if (fx2) eq("실제 응답(학명리 건너2): 12개 노선, 버스 없음", [V.parseChilgok(fx2).length, V.parseChilgok(fx2).filter(function (r) { return r.bus; }).length], [12, 0]);
+});
+
+var DGB = { header: { success: true, resultCode: "0000" }, body: { block: false, list: [
+  { routeId: "4090003014", routeNo: "칠곡3", moveDir: "1", bsGap: 49, arrState: "60분" },
+  { routeId: "1000009300", routeNo: "급행9-3", moveDir: "0", bsGap: -1, arrState: "기점출발예정" },
+  { routeId: "4090003021", routeNo: "칠곡3", moveDir: "1", bsGap: 2, arrState: "곧 도착" },
+  { routeId: "4090003011", routeNo: "칠곡3", moveDir: "1", bsGap: -1, bsNm: "운행종료", arrState: "운행종료" },
+  { routeId: "3000527000", routeNo: "527", moveDir: "1", bsGap: 4, arrState: "5분", vhcNo2: "1234" },
+  { routeId: "1000009300", routeNo: "급행9-3", moveDir: "0", bsGap: -1, arrState: "06:10 기점출발예정" }
+] } };
+
+run("parseDaegu", function () {
+  var rows = V.parseDaegu(DGB);
+  eq("대구 응답 -> 줄(id 앞에 dgb:, 운행종료는 뺀다, 곧 도착=0분, 출발예정은 시간 없음)",
+    pick(rows, ["route_id", "route_no", "stops", "minutes", "pending", "depart"]),
+    [["dgb:4090003014", "칠곡3", 49, 60, false, null],
+     ["dgb:1000009300", "급행9-3", null, null, true, null],
+     ["dgb:4090003021", "칠곡3", 2, 0, false, null],
+     ["dgb:3000527000", "527", 4, 5, false, null],
+     ["dgb:1000009300", "급행9-3", null, null, true, "06:10"]]);
+  eq("차량 번호가 오면 들고 있는다", rows[3].vehicle, "1234");
+  eq("성공 표시가 없거나 깨진 응답은 실패(null)", [V.parseDaegu(null), V.parseDaegu({ header: { success: false } }), V.parseDaegu("x")], [null, null, null]);
+  eq("버스가 없으면 빈 목록(성공)", V.parseDaegu({ header: { success: true }, body: { list: [] } }), []);
+  var night = { header: { success: true }, body: { block: false, list: [{ routeId: "1000009300", routeNo: "급행9-3", bsGap: -1, bsNm: "운행종료", arrState: "운행종료", prevBsGap: 3 }] } };
+  eq("오늘 밤 실제 응답(운행종료만) -> 빈 목록", V.parseDaegu(night), []);
+});
+
+run("directionRows", function () {
+  var p2479 = [
+    { route_id: "30010", route_no: "300", name: "", ends: "가산2리한듬↔ 북부정류장", stops: 5, minutes: 7, bus: true, text: "" },
+    { route_id: "88510", route_no: "885", name: "", ends: "구미역↔ 동명면우체국건너", stops: 3, minutes: 4, bus: true, text: "" },
+    { route_id: "칠곡330", route_no: "칠곡3", name: "", ends: "", stops: null, minutes: null, bus: false, text: "" }
+  ];
+  eq("학명리 건너2(동명행): 버스 있는 노선 전부 + 885 는 학명리행 카드에도 '종점으로 오는 중'으로",
+    pick(V.directionRows(CFG, "2479", p2479), ["key", "dir", "stops", "minutes", "board"]),
+    [["dongmyeong:30010", "dongmyeong", 5, 7, "학명리 건너2"],
+     ["dongmyeong:88510", "dongmyeong", 3, 4, "학명리 건너2"],
+     ["hakmyeong:88510:turn", "hakmyeong", 12, 4, null]]);
+  var turn = V.directionRows(CFG, "2479", p2479)[2].turn;
+  eq("885 되돌이: 종점 이름과 지나는 정류장", turn, { terminal: "동명면우체국건너", pass: "학명리 건너2" });
+
+  var p2483 = [
+    { route_id: "30020", route_no: "300", stops: 12, minutes: 16, bus: true },
+    { route_id: "3420", route_no: "34", stops: 8, minutes: 9, bus: true },
+    { route_id: "3620", route_no: "36", stops: 5, minutes: 6, bus: true },
+    { route_id: "칠곡333", route_no: "칠곡3", stops: 20, minutes: 25, bus: true },
+    { route_id: "88520", route_no: "885", stops: null, minutes: 12, bus: true }
+  ];
+  eq("학명리 정류소(학명리행): 사용자 방식 -10분, 정류장 수는 동명 승차 정류장까지로. 동명을 지난 차·정류장 수 모르는 차·다른 길 노선은 뺀다",
+    pick(V.directionRows(CFG, "2483", p2483), ["key", "stops", "minutes", "board", "offset_min", "estimated"]),
+    [["hakmyeong:30020", 3, 6, "동명면행정복지센터", 10, true],
+     ["hakmyeong:3420", 0, 0, "동명교통", 9, true]]);
+
+  var d = V.parseDaegu(DGB);
+  eq("빼고 나면 0분 아래(시간으로 보면 이미 동명 승차 정류장을 지난 차)는 '곧 도착'으로 붙잡지 않고 뺀다",
+    V.directionRows(CFG, "dgb:3690003070", [{ route_id: "dgb:4090003001", route_no: "칠곡3", stops: 7, minutes: 3, bus: true }]), []);
+  eq("대구 학명리: 칠곡3 중 학명리 가는 변형만, -10분",
+    pick(V.directionRows(CFG, "dgb:3690003070", d), ["key", "stops", "minutes", "board", "offset_min"]),
+    [["hakmyeong:dgb:4090003014", 41, 50, "동명면행정복지센터", 10]]);
+  eq("대구 학명리 건너2(동명행): 칠곡3·급행9-3 만. 기점 출발 시각을 준 출발예정 차는 남긴다(시간은 만들지 않는다)",
+    pick(V.directionRows(CFG, "dgb:7181001900", d), ["key", "stops", "minutes", "depart"]),
+    [["dongmyeong:dgb:4090003014", 49, 60, null],
+     ["dongmyeong:dgb:4090003021", 2, 0, null],
+     ["dongmyeong:dgb:1000009300", null, null, "06:10"]]);
+  eq("칠곡3 변형 이름", V.directionRows(CFG, "dgb:7181001900", d)[0].label, "경운대·예술대 경유");
+  eq("모르는 정류장 -> 빈 목록", V.directionRows(CFG, "9999", p2479), []);
+});
+
+run("config", function () {
+  // 줄 하나(방향:노선)는 정류장 하나에서만 온다 - 그래야 '이번 응답에 있었나'를 그 정류장 기준으로 판단할 수 있다
+  var seen = {}, clash = [];
+  Object.keys(CFG.stops).forEach(function (sid) {
+    var st = CFG.stops[sid];
+    (st.route_ids || []).forEach(function (id) {
+      var k = st.direction + ":" + id;
+      if (seen[k] && seen[k] !== sid) clash.push(k);
+      seen[k] = sid;
+    });
+  });
+  eq("방향마다 노선 id 가 정류장 둘에 겹치지 않는다", clash, []);
+  eq("방향별 정류장", ["dongmyeong", "hakmyeong"].map(function (dir) { return V.stationsOf(CFG, dir); }),
+    [["2479", "dgb:7181001900"], ["2483", "2485", "dgb:3690003070", "dgb:3690003090", "2479"]]);
+});
+
+function row(key, minutes, stops, extra) {
+  var r = { key: key, dir: key.split(":")[0], sid: "2479", route_id: key.split(":")[1], route_no: "300", stops: stops, minutes: minutes, board: "학명리 건너2" };
+  for (var k in (extra || {})) r[k] = extra[k];
+  return r;
+}
+
+run("anchors", function () {
+  var S = V.newState(), k = "dongmyeong:30010";
+  V.ingest(S, "2479", [row(k, 10, 9)], T0);
+  var v = V.view(S, "dongmyeong", T0);
+  eq("처음 받은 10분 -> 도착 시각 = 받은 때 + 10분, 지금 받은 값", pick(v, ["key", "end", "stops", "live"]), [[k, T0 + 600000, 9, true]]);
+
+  V.ingest(S, "2479", [row(k, 10, 9)], T0 + 30000);
+  eq("30초 뒤 또 10분: 1분 안쪽이라 되감지 않고 계속 줄인다(9분 30초)", V.view(S, "dongmyeong", T0 + 30000)[0].end, T0 + 600000);
+
+  V.ingest(S, "2479", [row(k, 10, 9)], T0 + 100000);
+  eq("100초 뒤에도 10분(차가 서 있음): 화면이 1분 넘게 앞서면 받은 값으로 다시 맞춘다", V.view(S, "dongmyeong", T0 + 100000)[0].end, T0 + 700000);
+
+  V.ingest(S, "2479", [row(k, 8, 7)], T0 + 130000);
+  eq("새 값 8분이 1분 넘게 다르면 그 값으로", pick(V.view(S, "dongmyeong", T0 + 130000), ["end", "stops"]), [[T0 + 610000, 7]]);
+
+  V.fail(S, "2479", T0 + 160000);
+  eq("정류장 응답 실패: 받은 시간을 그대로 이어서 줄인다(사라지지 않음). 마지막 성공이 75초 안이면 그대로 지금 값(잠깐 실패에 표시가 깜빡이지 않게)",
+    pick(V.view(S, "dongmyeong", T0 + 160000), ["end", "stops", "live"]), [[T0 + 610000, 7, true]]);
+  eq("실패가 이어져 마지막 성공에서 75초가 넘으면 '기준' 표시(시간은 계속 줄인다)",
+    pick(V.view(S, "dongmyeong", T0 + 205001), ["end", "stops", "live", "seenAt"]), [[T0 + 610000, 7, false, T0 + 130000]]);
+
+  V.ingest(S, "2479", [], T0 + 210000);
+  eq("응답은 왔는데 이번엔 이 버스가 없음: 그래도 이어서 줄인다('기준' 표시)",
+    pick(V.view(S, "dongmyeong", T0 + 210000), ["end", "live"]), [[T0 + 610000, false]]);
+  eq("도착 시각 + 3분까지는 '곧 도착'으로 남긴다", V.view(S, "dongmyeong", T0 + 610000 + 180000).length, 1);
+  eq("그 뒤엔 놓는다", V.view(S, "dongmyeong", T0 + 610000 + 180001).length, 0);
+  eq("놓은 기억은 지운다", Object.keys(S.memo), []);
+});
+
+run("anchors: 분 없이 정류장 수만", function () {
+  var S = V.newState(), k = "dongmyeong:dgb:4090003014";
+  V.ingest(S, "dgb:7181001900", [row(k, 5, 4, { sid: "dgb:7181001900" })], T0);
+  V.ingest(S, "dgb:7181001900", [row(k, null, 2, { sid: "dgb:7181001900" })], T0 + 60000);
+  eq("줄은 왔는데 분이 없으면 기억한 도착 시각을 그대로 쓰고 정류장 수는 새 값",
+    pick(V.view(S, "dongmyeong", T0 + 60000), ["end", "stops", "live"]), [[T0 + 300000, 2, true]]);
+  var S2 = V.newState();
+  V.ingest(S2, "2479", [row("dongmyeong:3410", null, 6)], T0);
+  eq("처음부터 분이 없으면 시간 없이 정류장 수만", pick(V.view(S2, "dongmyeong", T0), ["end", "stops"]), [[null, 6]]);
+  V.fail(S2, "2479", T0 + 30000);
+  eq("시간 없는 줄도 응답이 끊기면 3분까지는 정류장 수를 '기준' 표시로 남긴다",
+    [V.view(S2, "dongmyeong", T0 + 180000).length, V.view(S2, "dongmyeong", T0 + 180001).length], [1, 0]);
+});
+
+run("anchors: 응답이 오래되면 '지금 값'이 아니다", function () {
+  var S = V.newState(), k = "dongmyeong:30010";
+  V.ingest(S, "2479", [row(k, 10, 9)], T0);
+  eq("75초까지는 지금 값", V.view(S, "dongmyeong", T0 + 75000)[0].live, true);
+  eq("그 뒤로 새 응답이 없으면 '기준' 표시(시간은 계속 줄인다)", pick(V.view(S, "dongmyeong", T0 + 75001), ["live", "end"]), [[false, T0 + 600000]]);
+});
+
+run("anchors: 정렬·다른 방향", function () {
+  var S = V.newState();
+  V.ingest(S, "2479", [row("dongmyeong:a", 12, 10), row("dongmyeong:b", 3, 2), row("dongmyeong:c", null, 4), row("hakmyeong:x:turn", 5, 9)], T0);
+  eq("빨리 오는 순, 시간 없는 줄은 뒤(정류장 수 순)", V.view(S, "dongmyeong", T0).map(function (r) { return r.key; }),
+    ["dongmyeong:b", "dongmyeong:a", "dongmyeong:c"]);
+  eq("다른 방향 줄은 섞이지 않는다", V.view(S, "hakmyeong", T0).map(function (r) { return r.key; }), ["hakmyeong:x:turn"]);
+});
+
+run("save/restore", function () {
+  var S = V.newState();
+  V.ingest(S, "2479", [row("dongmyeong:a", 10, 9), row("dongmyeong:b", 1, 1)], T0);
+  var R = V.restore(V.save(S), T0 + 4 * 60000 + 1);
+  eq("다시 열면: 도착 + 3분 안쪽만 살리고, 정류장 응답은 아직 없으니 '기준' 표시로",
+    pick(V.view(R, "dongmyeong", T0 + 4 * 60000 + 1), ["key", "end", "live"]), [["dongmyeong:a", T0 + 600000, false]]);
+  eq("깨진 저장값 -> 빈 상태", [V.restore("{x", T0).memo, V.restore(null, T0).memo, V.restore("[1]", T0).memo], [{}, {}, {}]);
+});
+
+run("text", function () {
+  eq("남은 시간 글자(초 단위)",
+    [V.countdownText(T0 + 125000, T0), V.countdownText(T0 + 59000, T0), V.countdownText(T0, T0), V.countdownText(T0 - 5000, T0), V.countdownText(T0 + 3725000, T0)],
+    ["2분 05초 뒤", "59초 뒤", "곧 도착", "곧 도착", "1시간 2분 05초 뒤"]);
+  eq("정류장 수 글자", [V.stopsText(0), V.stopsText(3), V.stopsText(null)], ["정류장에 있음", "3정류장 전", ""]);
+});
+
+run("render", function () {
+  var live = { key: "hakmyeong:30020", route_no: "300", stops: 3, end: T0 + 360000, live: true, seenAt: T0, board: "동명면행정복지센터", estimated: true, offset_min: 10, base: "학명리" };
+  var h = V.renderRow(live, T0);
+  yes("시간이 있으면 크게 남은 시간, 아래에 정류장 수(항상)·타는 곳·추정 방식", h.indexOf("6분 00초 뒤") >= 0 && h.indexOf("3정류장 전") >= 0 &&
+    h.indexOf("동명면행정복지센터에서 타기") >= 0 && h.indexOf("학명리 정류소 시간 −10분") >= 0 && h.indexOf('data-end="' + (T0 + 360000) + '"') >= 0);
+  var carried = { key: "dongmyeong:30010", route_no: "300", stops: 7, end: T0 + 300000, live: false, seenAt: T0 - 120000, board: "학명리 건너2" };
+  var c = V.renderRow(carried, T0), hm = new Date(T0 - 120000);
+  var hhmm = ("0" + hm.getHours()).slice(-2) + ":" + ("0" + hm.getMinutes()).slice(-2);
+  yes("이번에 못 받은 줄: 시간은 이어서 줄이고 정류장 수와 '몇 시 기준'을 같이", c.indexOf("5분 00초 뒤") >= 0 && c.indexOf("7정류장 전") >= 0 && c.indexOf(hhmm + " 기준") >= 0 && c.indexOf("carried") >= 0);
+  var only = V.renderRow({ key: "dongmyeong:3410", route_no: "34", stops: 6, end: null, live: true, seenAt: T0, board: "학명리 건너2" }, T0);
+  yes("시간이 없으면 정류장 수를 크게", /class="when"[^>]*>6정류장 전</.test(only));
+  var dep = V.renderRow({ key: "dongmyeong:dgb:1000009300", route_no: "급행9-3", stops: null, end: null, depart: "06:10", live: true, seenAt: T0, board: "학명리 건너2" }, T0);
+  yes("출발 전 차: 기점 출발 예정 시각(받은 값)만", dep.indexOf("기점 06:10 출발 예정") >= 0);
+  var t = V.renderRow({ key: "hakmyeong:88510:turn", route_no: "885", stops: 12, end: T0 + 240000, live: true, seenAt: T0, turn: { terminal: "동명면우체국건너", pass: "학명리 건너2" } }, T0);
+  yes("885 되돌이: 종점까지 정류장 수 + 학명리 건너2 지나는 시간(받은 값)", t.indexOf("종점까지 12정류장") >= 0 && t.indexOf("학명리 건너2 지나는 시간") >= 0 && t.indexOf("4분 00초 뒤") >= 0);
+  yes("글자는 이스케이프", V.renderRow({ key: "d:x", route_no: "<b>", stops: 1, end: null, live: true, seenAt: T0 }, T0).indexOf("<b>") < 0);
+
+  var card = V.renderCard("dongmyeong", [], { ok: 0, fail: 2, total: 2, waiting: 0 }, T0);
+  yes("버스 없음 + 전부 실패 -> 못 받았다는 경고", card.indexOf("못 받았어요") >= 0);
+  yes("버스 없음 + 다 받음 -> 오는 버스 없음", V.renderCard("dongmyeong", [], { ok: 2, fail: 0, total: 2, waiting: 0 }, T0).indexOf("지금 오는 버스 없음") >= 0);
+  yes("처음 확인 중", V.renderCard("dongmyeong", [], { ok: 0, fail: 0, total: 2, waiting: 2 }, T0).indexOf("확인 중") >= 0);
+  yes("일부 실패 -> 이어서 보여준다는 안내", V.renderCard("dongmyeong", [carried], { ok: 1, fail: 1, total: 2, waiting: 0 }, T0).indexOf("직전 값") >= 0);
+});
+
+run("timetable", function () {
+  var stats = [{ routeno: "300", slot_index: 1, min_time: "10:51", max_time: "10:58", avg_time: "10:54", sample_count: 3 }];
+  var h = V.renderStats(stats);
+  yes("최근 실제 시간 표: 버스·평균·최소~최대·기록 일수", h.indexOf("300번") >= 0 && h.indexOf("10:54") >= 0 && h.indexOf("10:51~10:58") >= 0 && h.indexOf("3일 기록") >= 0);
+  yes("기록이 없으면 모으는 중", V.renderStats([]).indexOf("모이는 중") >= 0);
+  var arr = { dongmyeong: { "2026-10-24": [{ arrival_time: "2026-10-24T12:03:00+09:00", routeno: "급행9-3" }, { arrival_time: "2026-10-24T12:53:10+09:00", routeno: "885" }] } };
+  eq("오늘 지나간 버스(실제 기록)", V.todayPassed(arr, "dongmyeong", "2026-10-24"), [["12:03", "급행9-3"], ["12:53", "885"]]);
+  eq("오늘 기록 없음", V.todayPassed(arr, "hakmyeong", "2026-10-24"), []);
+  eq("한국 날짜", V.kstDate(Date.UTC(2026, 9, 24, 15, 30)), "2026-10-25");
+});
+
+// 칠곡 버스정보시스템이 안 될 때 TAGO(/all 중계 응답, 원본 그대로)로 대신
+function tagoNode(items) { return { ok: true, body: { response: { body: { items: items.length ? { item: items.length === 1 ? items[0] : items } : "" } } } }; }
+function ti(routeid, routeno, sec, cnt) { return { routeid: routeid, routeno: routeno, arrtime: sec, arrprevstationcnt: cnt }; }
+run("tagoFallback", function () {
+  var all = { results: {
+    "37390:CGB2479": tagoNode([ti("CGB30010", "300", 300, 4), ti("CGB30010", "300", 1500, 15)]),
+    "37050:GMB2479": tagoNode([ti("GMB88510", "885", 600, 5)]),
+    "37390:CGB2142": tagoNode([ti("CGB30020", "300", 420, 3), ti("CGB30010", "300", 120, 1), ti("DGB4090003001", "칠곡3", 60, 1)]),
+    "37390:CGB4870": tagoNode([ti("CGB30020", "300", 240, 1)]),
+    "37390:CGB2141": tagoNode([ti("CGB9-310", "9-3", 90, 1)]),
+    "37050:GMB2142": { ok: false, error: "TAGO 23" }
+  } };
+  var d = V.tagoRows(CFG, "2479", all);
+  eq("학명리 건너2: 같은 정류장 TAGO 값 그대로(노선마다 가장 빠른 차, 885 도 동명행)", pick(d.filter(function (r) { return !r.turn; }), ["key", "minutes", "stops", "source"]), [["dongmyeong:30010", 5, 4, "tago"], ["dongmyeong:88510", 10, 5, "tago"]]);
+  eq("885 되돌이도 TAGO 로", pick(d.filter(function (r) { return r.turn; }), ["key", "stops", "minutes"]), [["hakmyeong:88510:turn", 14, 10]]);
+  var h = V.tagoRows(CFG, "2483", all);
+  eq("학명리행: 동명 승차 정류장 TAGO 값 그대로(빼기 없음), 규칙에 없는 노선·대구 노선 제외",
+    pick(h, ["key", "minutes", "stops", "board", "estimated", "source"]), [["hakmyeong:30020", 4, 1, "동명교통", false, "tago"]]);
+  eq("9-3 은 등골마을입구 대신 동명면우체국 값", pick(V.tagoRows(CFG, "2485", all), ["key", "minutes", "board"]), [["hakmyeong:9-310", 2, "동명면우체국"]]);
+  eq("TAGO 도 전부 실패면 null", V.tagoRows(CFG, "2479", { results: { "37390:CGB2479": { ok: false }, "37050:GMB2479": { ok: false } } }), null);
+  eq("응답 없음 -> null", V.tagoRows(CFG, "2479", null), null);
+  eq("대구 정류장은 대신하지 않는다", V.tagoRows(CFG, "dgb:7181001900", all), null);
+  var row = V.renderRow({ key: "dongmyeong:30010", route_no: "300", stops: 4, end: T0 + 300000, live: true, seenAt: T0, board: "학명리 건너2", source: "tago" }, T0);
+  yes("TAGO 로 대신한 줄은 표시", row.indexOf("TAGO") >= 0);
+});
+
+document.getElementById("out").textContent = out.join("\n");
+</script>
+</body></html>

@@ -1,0 +1,16 @@
+{
+  "id": "./",
+  "name": "동명 · 학명리 버스 v3",
+  "short_name": "버스 v3",
+  "description": "칠곡군·대구 버스정보시스템으로 보는 동명 · 학명리 방향 버스 도착 (v3)",
+  "lang": "ko",
+  "display": "standalone",
+  "start_url": "./",
+  "scope": "./",
+  "theme_color": "#0d47a1",
+  "background_color": "#ffffff",
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}
