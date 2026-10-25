@@ -57,7 +57,7 @@ jobs:
             mkdir -p orig && rm -rf orig/data && cp -r "$RUNNER_TEMP/orig/data" orig/data
             python -m busv3.update --bis "$RUNNER_TEMP/bis.jsonl"
             git add data
-            if git diff --cached --quiet -- data/obs data/bis data/arrivals.json data/stats.json; then echo "no change"; exit 0; fi
+            if git diff --cached --quiet -- data/obs data/bis data/raw data/arrivals.json data/stats.json; then echo "no change"; exit 0; fi
             git commit -m "data: $(TZ=Asia/Seoul date +%Y-%m-%dT%H:%M)"
             if git push origin HEAD:main; then exit 0; fi
             echo "push raced (attempt $attempt), retrying"

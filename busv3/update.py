@@ -127,6 +127,15 @@ def main() -> int:
         from busv3 import bis
         polls = bis.read_polls(sys.argv[sys.argv.index("--bis") + 1])
         print("버스정보시스템 새 회차", sum(store.add(own, d, snaps, kind="bis") for d, snaps in polls.items()))
+        raw = Path(sys.argv[sys.argv.index("--bis") + 1] + ".raw")
+        if raw.exists():   # 대구 응답 원본(필요한 칸만): data/raw/daegu/<날짜>.jsonl 에 덧붙인다
+            for line in raw.read_text(encoding="utf-8").splitlines():
+                if line.strip():
+                    day = json.loads(line)["t"][:10]
+                    path = own / "raw" / "daegu" / f"{day}.jsonl"
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    with path.open("a", encoding="utf-8", newline="\n") as f:
+                        f.write(line + "\n")
     hours = hours_to_fetch(store.last_time(own), now)
     added = {}
     for snap in fetch_cloud(hours):

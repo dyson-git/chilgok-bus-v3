@@ -2,8 +2,10 @@
 
 정류장·노선 규칙은 v3/stops.js(화면)와 같다 - 바뀌면 둘 다 고친다.
 - 동명행: 학명리 건너2 에서 받은 시간 그대로.
-- 학명리행: 학명리 정류소 시간 −10분(9-3 은 등골마을입구 −3분), 사용자 방식. 기준 승차 정류장을 이미 지난 차는 앞에 남은
-  더 가까운 동명 정류장(alts) 기준으로 빼는 분을 정류장 수 비율로 줄이고, 동명을 다 지난 차·정류장 수 모르는 차는 뺀다.
+- 학명리행: 학명리 정류소 시간에서 몇 분 빼는 건 짐작이라(10/25 9-3: 우체국에 서 있는데 '3분 뒤') 쓰지 않는다.
+  정류장 수(실제 값)를 동명 승차 정류장까지로 바꿔, 승차 정류장에 있으면 0분·1정류장 전이면 1분으로 두고 그보다 멀면 FAR(아직 멂).
+  기준 승차 정류장을 지난 차는 그다음 동명 정류장(alts) 기준, 동명을 다 지난 차·정류장 수 모르는 차는 뺀다.
+  그래서 학명리행 도착 = 버스가 동명 승차 정류장에 닿은 때(2분마다 보므로 몇십 초~2분 오차).
 """
 import html
 import json
@@ -14,6 +16,7 @@ from pathlib import Path
 from busv3.records import KST, Snap
 
 RELAY_URL = "https://chilgok-bus-relay.wisdomdy.workers.dev"
+FAR = 99.0  # 학명리행: 동명 승차 정류장에서 2정류장 이상 남은 차(시간을 만들지 않고 '아직 멂'으로만)
 
 
 def _gap(stops, alt=None):
@@ -83,23 +86,17 @@ def _row_minutes(st, r):
     """한 줄 -> 그 방향 승차 정류장 기준 분 | None(뺄 줄)."""
     if st.get("route_nos") and r["route_no"] not in st["route_nos"]:
         return None
-    if r["minutes"] is None:
-        return None
     gaps = st.get("gaps")
     if gaps is None:
-        return float(r["minutes"])
+        return None if r["minutes"] is None else float(r["minutes"])
     gap = gaps.get(r["route_id"])
     if gap is None or r["stops"] is None:
         return None
-    if r["stops"] >= gap["stops"]:
-        off = st["offset"]
-    else:
-        alt = next((a for a in gap["alts"] if r["stops"] >= a), None)
-        if alt is None:
-            return None
-        off = round(st["offset"] * alt / gap["stops"])
-    left = r["minutes"] - off
-    return float(left) if left >= 0 else None   # 받은 시간으로는 이미 동명을 지난 차
+    board = gap["stops"] if r["stops"] >= gap["stops"] else next((a for a in gap["alts"] if r["stops"] >= a), None)
+    if board is None:
+        return None
+    left = r["stops"] - board
+    return float(left) if left <= 1 else FAR
 
 
 def snaps_from_poll(got, when):
@@ -122,7 +119,16 @@ def snaps_from_poll(got, when):
     return out
 
 
-def fetch_poll(session=None, timeout=15):
+def raw_daegu(sid, j, when):
+    """대구 응답을 그대로(필요한 칸만) 남긴다 - 받은 예상 시간과 실제 지나간 시각을 나중에 맞춰 보려고(종점 들렀다 오는 차 등)."""
+    out = []
+    for r in ((j or {}).get("body") or {}).get("list") or []:
+        out.append({"t": when.isoformat(timespec="seconds"), "bs": sid[4:], "route": str(r.get("routeId")), "no": r.get("routeNo"),
+                    "state": r.get("arrState"), "gap": r.get("bsGap"), "at": r.get("bsNm"), "dir": r.get("moveDir"), "car": r.get("vhcNo2")})
+    return out
+
+
+def fetch_poll(session=None, timeout=15, raw=None, when=None):
     import requests
     s = session or requests
     got = {}
@@ -130,7 +136,10 @@ def fetch_poll(session=None, timeout=15):
         try:
             if sid.startswith("dgb:"):
                 r = s.get(RELAY_URL + "/dgb", params={"bs": sid[4:]}, timeout=timeout, headers={"User-Agent": "chilgok-bus-v3"})
-                got[sid] = parse_daegu(r.json()) if r.ok else None
+                j = r.json() if r.ok else None
+                got[sid] = parse_daegu(j)
+                if raw is not None and got[sid] is not None:
+                    raw.extend(raw_daegu(sid, j, when or datetime.now(KST)))
             else:
                 r = s.get(RELAY_URL + "/bis", params={"stop": sid}, timeout=timeout, headers={"User-Agent": "chilgok-bus-v3"})
                 got[sid] = parse_chilgok(r.text) if r.ok else None

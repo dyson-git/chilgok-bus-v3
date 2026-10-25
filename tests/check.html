@@ -111,17 +111,23 @@ run("directionRows", function () {
     { route_id: "칠곡333", route_no: "칠곡3", stops: 20, minutes: 25, bus: true },
     { route_id: "88520", route_no: "885", stops: null, minutes: 12, bus: true }
   ];
-  eq("학명리 정류소(학명리행): 사용자 방식 -10분, 정류장 수는 동명 승차 정류장까지로. 동명을 지난 차·정류장 수 모르는 차·다른 길 노선은 뺀다",
-    pick(V.directionRows(CFG, "2483", p2483), ["key", "stops", "minutes", "board", "offset_min", "estimated"]),
-    [["hakmyeong:30020", 3, 6, "동명면행정복지센터", 10, true],
-     ["hakmyeong:3420", 0, 0, "동명교통", 9, true]]);
+  eq("학명리행: 정류장 수(실제 값)를 동명 승차 정류장까지로 바꾸고, 학명리 시간은 빼지 않고 참고로만(ref_min). 동명을 지난 차·정류장 수 모르는 차·다른 길 노선은 뺀다",
+    pick(V.directionRows(CFG, "2483", p2483), ["key", "stops", "minutes", "ref_min", "base", "board"]),
+    [["hakmyeong:30020", 3, null, 16, "학명리", "동명면행정복지센터"],
+     ["hakmyeong:3420", 0, null, 9, "학명리", "동명교통"]]);
 
   var d = V.parseDaegu(DGB);
-  eq("빼고 나면 0분 아래(시간으로 보면 이미 동명 승차 정류장을 지난 차)는 '곧 도착'으로 붙잡지 않고 뺀다",
-    V.directionRows(CFG, "dgb:3690003070", [{ route_id: "dgb:4090003001", route_no: "칠곡3", stops: 7, minutes: 3, bus: true }]), []);
-  eq("대구 학명리: 칠곡3 중 학명리 가는 변형만, -10분",
-    pick(V.directionRows(CFG, "dgb:3690003070", d), ["key", "stops", "minutes", "board", "offset_min"]),
-    [["hakmyeong:dgb:4090003014", 41, 50, "동명면행정복지센터", 10]]);
+  eq("대구 학명리: 칠곡3 중 학명리 가는 변형만, 시간은 참고",
+    pick(V.directionRows(CFG, "dgb:3690003070", d), ["key", "stops", "minutes", "ref_min", "board"]),
+    [["hakmyeong:dgb:4090003014", 41, null, 60, "동명면행정복지센터"]]);
+  // 10/25 18시 실제: 등골마을입구 기준 급행9-3 "7분, 3정류장 전, 지금 위치 동명면우체국" -> 이전엔 7-3=4분으로 세어 '3분 뒤'(버스는 우체국에 있었다)
+  var at = V.directionRows(CFG, "dgb:3690003090", V.parseDaegu({ header: { success: true }, body: { list: [
+    { routeId: "1000009300", routeNo: "급행9-3", moveDir: "1", bsGap: 3, bsNm: "동명면우체국", arrState: "7분", vhcNo2: "2656" }] } }));
+  eq("9-3 이 동명면우체국에 있을 때: 정류장에 있음(0), 시간을 만들지 않음, 지금 위치",
+    pick(at, ["key", "stops", "minutes", "ref_min", "board", "where"]), [["hakmyeong:dgb:1000009300", 0, null, 7, "동명면우체국", "동명면우체국"]]);
+  eq("한 정류장 더 가면(삼산, 2정류장 전) 동명을 지난 차라 뺀다",
+    V.directionRows(CFG, "dgb:3690003090", V.parseDaegu({ header: { success: true }, body: { list: [
+      { routeId: "1000009300", routeNo: "급행9-3", moveDir: "1", bsGap: 2, bsNm: "삼산", arrState: "전전" }] } })), []);
   eq("대구 학명리 건너2(동명행): 칠곡3·급행9-3 만. 기점 출발 시각을 준 출발예정 차는 남긴다(시간은 만들지 않는다)",
     pick(V.directionRows(CFG, "dgb:7181001900", d), ["key", "stops", "minutes", "depart"]),
     [["dongmyeong:dgb:4090003014", 49, 60, null],
@@ -228,10 +234,10 @@ run("text", function () {
 });
 
 run("render", function () {
-  var live = { key: "hakmyeong:30020", route_no: "300", stops: 3, end: T0 + 360000, live: true, seenAt: T0, board: "동명면행정복지센터", estimated: true, offset_min: 10, base: "학명리" };
+  var live = { key: "hakmyeong:30020", route_no: "300", stops: 3, end: T0 + 360000, live: true, seenAt: T0, board: "동명면행정복지센터", ref_min: 16, base: "학명리" };
   var h = V.renderRow(live, T0);
   yes("시간이 있으면 크게 남은 시간, 아래에 정류장 수(항상)·타는 곳·추정 방식", h.indexOf("6분 00초 뒤") >= 0 && h.indexOf("3정류장 전") >= 0 &&
-    h.indexOf("동명면행정복지센터에서 타기") >= 0 && h.indexOf("학명리 정류소 시간 −10분") >= 0 && h.indexOf('data-end="' + (T0 + 360000) + '"') >= 0);
+    h.indexOf("동명면행정복지센터에서 타기") >= 0 && h.indexOf("학명리 도착 16분(참고)") >= 0 && h.indexOf('data-end="' + (T0 + 360000) + '"') >= 0);
   var carried = { key: "dongmyeong:30010", route_no: "300", stops: 7, end: T0 + 300000, live: false, seenAt: T0 - 120000, board: "학명리 건너2" };
   var c = V.renderRow(carried, T0), hm = new Date(T0 - 120000);
   var hhmm = ("0" + hm.getHours()).slice(-2) + ":" + ("0" + hm.getMinutes()).slice(-2);
@@ -279,13 +285,42 @@ run("tagoFallback", function () {
   eq("885 되돌이도 TAGO 로", pick(d.filter(function (r) { return r.turn; }), ["key", "stops", "minutes"]), [["hakmyeong:88510:turn", 14, 10]]);
   var h = V.tagoRows(CFG, "2483", all);
   eq("학명리행: 동명 승차 정류장 TAGO 값 그대로(빼기 없음), 규칙에 없는 노선·대구 노선 제외",
-    pick(h, ["key", "minutes", "stops", "board", "estimated", "source"]), [["hakmyeong:30020", 4, 1, "동명교통", false, "tago"]]);
+    pick(h, ["key", "minutes", "stops", "board", "source"]), [["hakmyeong:30020", 4, 1, "동명교통", "tago"]]);
   eq("9-3 은 등골마을입구 대신 동명면우체국 값", pick(V.tagoRows(CFG, "2485", all), ["key", "minutes", "board"]), [["hakmyeong:9-310", 2, "동명면우체국"]]);
   eq("TAGO 도 전부 실패면 null", V.tagoRows(CFG, "2479", { results: { "37390:CGB2479": { ok: false }, "37050:GMB2479": { ok: false } } }), null);
   eq("응답 없음 -> null", V.tagoRows(CFG, "2479", null), null);
   eq("대구 정류장은 대신하지 않는다", V.tagoRows(CFG, "dgb:7181001900", all), null);
   var row = V.renderRow({ key: "dongmyeong:30010", route_no: "300", stops: 4, end: T0 + 300000, live: true, seenAt: T0, board: "학명리 건너2", source: "tago" }, T0);
   yes("TAGO 로 대신한 줄은 표시", row.indexOf("TAGO") >= 0);
+});
+
+// 학명리행 승차 정류장 시간을 TAGO 에서 직접(동명 정류장 등록) - 받은 값 그대로 세고, 버스정보시스템 줄과 한 줄로 합친다
+run("tagoDirect", function () {
+  var all = { results: {
+    "22:DGB3690003750": tagoNode([ti("DGB1000009300", "급행9-3", 300, 2), ti("DGB3000527000", "527", 60, 1)]),
+    "37390:CGB2142": tagoNode([ti("CGB30020", "300", 420, 3), ti("CGB30010", "300", 120, 1)])
+  } };
+  var rows = V.tagoDirectRows(CFG, all);
+  eq("동명 정류장 TAGO 직접 시간: 학명리행 규칙 노선만(527·반대 방향 300 제외)",
+    pick(rows, ["key", "direct_of", "minutes", "stops", "board", "source"]),
+    [["hakmyeong:30020:direct", "hakmyeong:30020", 7, 3, "동명면행정복지센터", "tago"],
+     ["hakmyeong:dgb:1000009300:direct", "hakmyeong:dgb:1000009300", 5, 2, "동명면우체국", "tago"]]);
+  eq("응답 없음 -> null", V.tagoDirectRows(CFG, null), null);
+
+  var st = V.newState();
+  V.ingest(st, "dgb:3690003090", V.directionRows(CFG, "dgb:3690003090", V.parseDaegu({ header: { success: true }, body: { list: [
+    { routeId: "1000009300", routeNo: "급행9-3", moveDir: "1", bsGap: 5, bsNm: "송산", arrState: "12분" }] } })), T0);
+  var v1 = V.view(st, "hakmyeong", T0);
+  eq("직접 시간이 없으면: 정류장 수만(시간 없음)", pick(v1, ["key", "stops", "end", "ref_min"]), [["hakmyeong:dgb:1000009300", 2, null, 12]]);
+  V.ingest(st, "tago:direct", rows, T0);
+  var v2 = V.view(st, "hakmyeong", T0);
+  eq("직접 시간이 있으면 한 줄로 합쳐 그 시간으로 센다(정류장 수·승차 정류장도 TAGO 값)",
+    pick(v2, ["key", "stops", "end", "board", "time_src", "where"]), [["hakmyeong:dgb:1000009300", 2, T0 + 300000, "동명면우체국", "tago", "송산"]]);
+  var html = V.renderRow(v2[0], T0);
+  yes("합친 줄: 승차 정류장 도착 시간(TAGO) + 지금 위치", html.indexOf("5분 00초 뒤") >= 0 && html.indexOf("지금 위치 송산") >= 0 && html.indexOf("동명면우체국 도착 시간 TAGO") >= 0);
+  var only = V.renderRow(v1[0], T0);
+  yes("시간 없는 줄: 정류장 수를 크게, 학명리 시간은 참고로만", /class="when"[^>]*>2정류장 전</.test(only) && only.indexOf("학명리(등골마을입구) 도착 12분(참고)") >= 0 && only.indexOf("data-end") < 0);
+  eq("저장본 형식이 바뀌면 예전 기억(빼서 만든 시간)은 버린다", Object.keys(V.restore(JSON.stringify({ v: 1, memo: { "hakmyeong:x": { end: T0 + 1000, seenAt: T0 } } }), T0).memo), []);
 });
 
 document.getElementById("out").textContent = out.join("\n");

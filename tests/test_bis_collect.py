@@ -53,7 +53,7 @@ def test_parse_daegu_json():
 def test_poll_becomes_snaps_with_user_rules():
     got = {
         "2479": bis.parse_chilgok(popup(tr("30010", "300", "<b>3 정거장전</b>", "<b>4 분후</b>"), tr("3410", "34", "<b>2 정거장전</b>", "<b>3 분후</b>"))),
-        "2483": bis.parse_chilgok(popup(tr("30020", "300", "<b>11 정거장전</b>", "<b>15 분후</b>"),     # 동명 2정류장 전 -> 15-10 = 5분
+        "2483": bis.parse_chilgok(popup(tr("30020", "300", "<b>11 정거장전</b>", "<b>15 분후</b>"),     # 동명 2정류장 전 -> 아직 멂
                                         tr("3620", "36", "<b>5 정거장전</b>", "<b>6 분후</b>"),        # 동명을 이미 지남 -> 뺀다
                                         tr("30010", "300", "<b>1 정거장전</b>", "<b>1 분후</b>"))),    # 학명리행 규칙에 없는 방향
         "2485": None,                                                                                # 실패
@@ -66,14 +66,17 @@ def test_poll_becomes_snaps_with_user_rules():
     snaps = bis.snaps_from_poll(got, t(10, 0, 30))
     d, h = snaps["dongmyeong"], snaps["hakmyeong"]
     assert d.obs == {"30010": ("300", 4.0), "3410": ("34", 3.0), "dgb:1000009300": ("급행9-3", 2.0)} and d.complete is True
-    assert h.obs == {"30020": ("300", 5.0)} and h.complete is False                 # 2485 실패
+    assert h.obs == {"30020": ("300", bis.FAR)} and h.complete is False             # 2485 실패
     assert d.t == t(10, 0, 30)
 
 
-def test_scaled_offset_when_past_main_boarding_stop():
-    got = {"2483": bis.parse_chilgok(popup(tr("30020", "300", "<b>8 정거장전</b>", "<b>10 분후</b>")))}   # 행정복지센터(9) 지남, 동명교통(8) 앞
-    h = bis.snaps_from_poll(got, t(10, 0))["hakmyeong"]
-    assert h.obs == {"30020": ("300", 1.0)}                                         # 10 - round(10*8/9)=9
+def test_hakmyeong_uses_stop_count_to_boarding_stop_not_minutes_minus_offset():
+    # 학명리 시간 -10분은 짐작이라(10/25 9-3: 우체국에 서 있는데 '3분 뒤') 시간표에도 쓰지 않는다. 승차 정류장에 닿은(0) 때를 도착으로.
+    got = {"2483": bis.parse_chilgok(popup(tr("30020", "300", "<b>8 정거장전</b>", "<b>10 분후</b>")))}   # 행정복지센터(9) 지남, 동명교통(8)에 있음
+    assert bis.snaps_from_poll(got, t(10, 0))["hakmyeong"].obs == {"30020": ("300", 0.0)}
+    got = {"dgb:3690003090": bis.parse_daegu({"header": {"success": True}, "body": {"list": [
+        {"routeId": "1000009300", "routeNo": "급행9-3", "arrState": "7분", "bsGap": 4, "bsNm": "송산"}]}})}   # 우체국 1정류장 전
+    assert bis.snaps_from_poll(got, t(10, 0))["hakmyeong"].obs == {"dgb:1000009300": ("급행9-3", 1.0)}
 
 
 def test_poll_file_roundtrip(tmp_path):
@@ -109,7 +112,16 @@ def test_combine_keeps_one_per_route_within_10_minutes():
     assert [(x.when, x.source) for x in got] == [(t(10, 2), "tago"), (t(10, 30), "bis")]
 
 
-def test_negative_after_offset_is_dropped_not_held_at_zero():
+def test_bus_past_every_dongmyeong_stop_is_dropped():
     got = {"dgb:3690003070": bis.parse_daegu({"header": {"success": True}, "body": {"list": [
-        {"routeId": "4090003001", "routeNo": "칠곡3", "arrState": "3분", "bsGap": 7}]}})}
+        {"routeId": "4090003001", "routeNo": "칠곡3", "arrState": "3분", "bsGap": 6}]}})}
     assert bis.snaps_from_poll(got, t(10, 0))["hakmyeong"].obs == {}
+
+
+def test_raw_daegu_rows_are_kept_for_checking_estimates(tmp_path):
+    raw = []
+    j = {"header": {"success": True}, "body": {"list": [
+        {"routeId": "1000009300", "routeNo": "급행9-3", "arrState": "26분", "bsGap": 15, "bsNm": "금구2리", "moveDir": "0", "vhcNo2": "2660", "x": 1}]}}
+    rows = bis.raw_daegu("dgb:7181001900", j, t(18, 30))
+    assert rows == [{"t": "2026-10-25T18:30:00+09:00", "bs": "7181001900", "route": "1000009300", "no": "급행9-3", "state": "26분",
+                     "gap": 15, "at": "금구2리", "dir": "0", "car": "2660"}]

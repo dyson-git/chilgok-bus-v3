@@ -75,6 +75,10 @@
     var id = ++round.id, left = SIDS.length;
     round.startedAt = now; round.doneAt = null; round.pending = {}; round.ok = {}; round.failed = {}; round.tago = {}; round.all = null;
     SIDS.forEach(function (sid) { round.pending[sid] = true; });
+    fetchAll().then(function (all) {
+      var rows = id === round.id ? V.tagoDirectRows(CFG, all) : null;
+      if (rows) { V.ingest(state, "tago:direct", rows, Date.now()); drawCards(); }
+    });
     drawCards();
     SIDS.forEach(function (sid) {
       fetchStation(sid).then(function (parsed) {

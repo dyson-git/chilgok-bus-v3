@@ -81,13 +81,14 @@
         text: st,
         pending: pending,
         depart: pending && dep ? pad2(Number(dep[1])) + ":" + dep[2] : null,
-        vehicle: r.vhcNo2 ? clean(r.vhcNo2) : null
+        vehicle: r.vhcNo2 ? clean(r.vhcNo2) : null,
+        where: !pending && r.bsNm && !/출발|운행/.test(r.bsNm) ? clean(r.bsNm) : null  // 버스가 지금 있는 정류장
       });
     });
     return out;
   }
 
-  // 한 정류장 응답(파싱한 줄) -> 화면 줄 [{key, dir, sid, route_id, route_no, label, board, stops, minutes, estimated, offset_min, base, turn, depart, vehicle, source}]
+  // 한 정류장 응답(파싱한 줄) -> 화면 줄 [{key, dir, sid, route_id, route_no, label, board, stops, minutes, ref_min, base, where, turn, depart, vehicle, source}]
   // 허용 노선만, 같은 key 는 가장 빨리 오는 줄 하나. gaps 가 있는 정류장(학명리행)은 사용자 방식으로 동명 승차 정류장 기준으로 바꾼다:
   // 정류장 수 - gaps.stops, 분 - offset_min. 이미 기준 승차 정류장을 지났으면 아직 앞에 있는 더 가까운 동명 정류장(alts)에서 타고
   // 빼는 분은 정류장 수 비율로 줄인다(예: 9정류장 10분 -> 8정류장 9분). 동명을 다 지난 차·정류장 수를 모르는 차는 뺀다.
@@ -109,7 +110,7 @@
         key: st.direction + ":" + p.route_id, dir: st.direction, sid: sid, route_id: p.route_id, route_no: p.route_no,
         label: (cfg.labels && cfg.labels[p.route_id]) || (p.route_no === "칠곡3" && p.ends ? p.ends : null),
         board: st.name, stops: isNum(p.stops) ? p.stops : null, minutes: isNum(p.minutes) ? p.minutes : null,
-        estimated: false, offset_min: null, base: null, turn: null,
+        ref_min: null, base: null, where: p.where || null, turn: null,
         depart: p.depart || null, vehicle: p.vehicle || null, source: st.source === "daegu" ? "daegu" : "chilgok"
       };
       var gap = st.gaps && st.gaps[p.route_id];
@@ -117,12 +118,11 @@
         if (r.stops === null) return;
         var board = r.stops >= gap.stops ? gap : (gap.alts || []).filter(function (a) { return r.stops >= a.stops; })[0];
         if (!board) return;
-        var off = board === gap ? st.offset_min : Math.round(st.offset_min * board.stops / gap.stops);
+        // 학명리 정류소 시간에서 몇 분 빼는 건 짐작이라(10/25 9-3: 우체국에 서 있는데 '3분 뒤') 세지 않는다.
+        // 정류장 수(실제 값)만 승차 정류장 기준으로 바꾸고, 받은 시간은 "학명리 도착 N분(참고)"로만 둔다.
         r.stops -= board.stops;
         r.board = board.board;
-        if (r.minutes !== null && r.minutes - off < 0) return;  // 받은 시간으로는 이미 동명을 지났다(0분으로 붙잡으면 계속 '곧 도착')
-        r.minutes = r.minutes === null ? null : r.minutes - off;
-        r.estimated = true; r.offset_min = off; r.base = st.name;
+        r.ref_min = r.minutes; r.minutes = null; r.base = st.name;
       }
       put(r);
     });
@@ -133,7 +133,7 @@
         put({
           key: t.direction + ":" + t.route_id + ":turn", dir: t.direction, sid: sid, route_id: t.route_id, route_no: t.route_no || p.route_no,
           label: null, board: null, stops: p.stops + t.extra_stops, minutes: isNum(p.minutes) ? p.minutes : null,
-          estimated: false, offset_min: null, base: null, turn: { terminal: t.terminal, pass: st.name },
+          ref_min: null, base: null, where: p.where || null, turn: { terminal: t.terminal, pass: st.name },
           depart: null, vehicle: p.vehicle || null, source: st.source === "daegu" ? "daegu" : "chilgok"
         });
       });
@@ -179,7 +179,7 @@
         if (!isNum(p.minutes) && !isNum(p.stops)) return;
         var r = {
           key: st.direction + ":" + p.route_id, dir: st.direction, sid: sid, route_id: p.route_id, route_no: p.route_no,
-          label: null, board: p.board, stops: p.stops, minutes: p.minutes, estimated: false, offset_min: null, base: null,
+          label: null, board: p.board, stops: p.stops, minutes: p.minutes, ref_min: null, base: null, where: null,
           turn: null, depart: null, vehicle: null
         };
         var b = best[r.key], rank = function (x) { return isNum(x.minutes) ? x.minutes : 10000 + x.stops; };
@@ -190,6 +190,38 @@
     }
     rows.forEach(function (r) { r.source = "tago"; });
     return rows;
+  }
+
+  // 학명리행 승차 정류장(동명) 시간을 TAGO 에서 직접: 중계 /all -> 줄(key = 버스정보시스템 줄 key + ":direct") | null.
+  // 노선은 학명리행 정류장 규칙(gaps)에 있는 것만 - 동명엔 다른 방향·다른 노선 버스가 많아서 규칙 밖은 쓰지 않는다.
+  // TAGO 노선 id: CGB30020 -> 30020, GMB88520 -> 88520, DGB1000009300 -> dgb:1000009300. 동명 정류장 여러 곳 중 가장 빨리 닿는 곳.
+  function tagoDirectRows(cfg, all) {
+    var td = cfg && cfg.tago && cfg.tago.direct, results = all && all.results;
+    if (!td || !results) return null;
+    var allowed = {};
+    Object.keys(cfg.stops).forEach(function (sid) {
+      var st = cfg.stops[sid];
+      if (st.direction === td.direction && st.gaps) Object.keys(st.gaps).forEach(function (id) { allowed[id] = true; });
+    });
+    var best = {}, order = [], anyOk = false;
+    td.nodes.forEach(function (node) {
+      var res = results[node];
+      if (!res || !res.ok) return;
+      anyOk = true;
+      tagoItems(res).forEach(function (it) {
+        var rid = String((it && it.routeid) || ""), id = /^DGB/.test(rid) ? "dgb:" + rid.slice(3) : /^(CGB|GMB)/.test(rid) ? rid.slice(3) : null;
+        var sec = Number(it.arrtime), cnt = Number(it.arrprevstationcnt);
+        if (!id || !allowed[id] || !isFinite(sec) || sec < 0) return;
+        var base = td.direction + ":" + id, r = {
+          key: base + ":direct", direct_of: base, dir: td.direction, sid: "tago:direct", route_id: id, route_no: clean(it.routeno || ""),
+          label: null, board: (cfg.tago.names && cfg.tago.names[node]) || null, stops: isFinite(cnt) && cnt >= 0 ? cnt : null,
+          minutes: Math.round(sec / 60), ref_min: null, base: null, where: null, turn: null, depart: null, vehicle: null, source: "tago"
+        };
+        if (!best[r.key]) order.push(r.key);
+        if (!best[r.key] || r.minutes < best[r.key].minutes) best[r.key] = r;
+      });
+    });
+    return anyOk ? order.map(function (k) { return best[k]; }) : null;
   }
 
   // 한 방향 카드에 영향을 주는 정류장들(그 방향 정류장 + 되돌이 노선을 보는 정류장)
@@ -204,7 +236,7 @@
   // state.stations[sid] = {okAt: 마지막 성공 응답 시각, failAt}
   function newState() { return { memo: {}, stations: {} }; }
 
-  var FIELDS = ["key", "dir", "sid", "route_id", "route_no", "label", "board", "stops", "minutes", "estimated", "offset_min", "base", "turn", "depart", "vehicle", "source"];
+  var FIELDS = ["key", "dir", "sid", "route_id", "route_no", "label", "board", "stops", "minutes", "ref_min", "base", "where", "direct_of", "turn", "depart", "vehicle", "source"];
 
   // 정류장 sid 의 성공 응답(directionRows 결과)을 시각 t 에 받았다.
   function ingest(state, sid, rows, t) {
@@ -244,6 +276,14 @@
       r.live = live;
       out.push(r);
     });
+    var byKey = {};
+    out.forEach(function (r) { if (!r.direct_of) byKey[r.key] = r; });
+    out = out.filter(function (r) {
+      if (!r.direct_of) return true;
+      var b = byKey[r.direct_of];
+      if (b && r.live && isNum(r.end)) { b.end = r.end; b.board = r.board; if (isNum(r.stops)) b.stops = r.stops; b.time_src = "tago"; }
+      return false;
+    });
     function k1(r) { return isNum(r.end) ? r.end : 9e15; }
     function k2(r) { return isNum(r.stops) ? r.stops : 9e15; }
     out.sort(function (a, b) { return k1(a) - k1(b) || k2(a) - k2(b) || (a.key < b.key ? -1 : a.key > b.key ? 1 : 0); });
@@ -251,11 +291,12 @@
   }
 
   // 기기에 저장(앱을 다시 열어도 받은 시간을 이어서 줄인다). 정류장 응답 상태는 저장하지 않는다(다시 열면 새로 받는다).
-  function save(state) { return JSON.stringify({ v: 1, memo: state.memo }); }
+  // v2(10/25): 학명리행 줄에 '빼서 만든 시간'을 더는 쓰지 않는다 - 예전(v1) 기억은 버린다.
+  function save(state) { return JSON.stringify({ v: 2, memo: state.memo }); }
   function restore(text, now) {
     var s = newState(), j;
     try { j = JSON.parse(text); } catch (e) { return s; }
-    var memo = j && typeof j === "object" && !Array.isArray(j) && j.memo && typeof j.memo === "object" ? j.memo : {};
+    var memo = j && typeof j === "object" && !Array.isArray(j) && j.v === 2 && j.memo && typeof j.memo === "object" ? j.memo : {};
     Object.keys(memo).forEach(function (k) {
       var m = memo[k];
       if (!m || typeof m !== "object" || typeof m.dir !== "string" || !isNum(m.seenAt)) return;
@@ -286,7 +327,9 @@
       else if (r.depart) big = "기점 " + r.depart + " 출발 예정";
       if (r.board) sub.push(esc(r.board + "에서 타기"));
       if (r.label) sub.push(esc(r.label));
-      if (r.estimated) sub.push(esc(r.base + " 정류소 시간 −" + r.offset_min + "분"));
+      if (r.time_src === "tago" && r.board) sub.push(esc(r.board + " 도착 시간 TAGO"));
+      if (r.where) sub.push(esc("지금 위치 " + r.where));
+      if (isNum(r.ref_min) && r.base) sub.push(esc(r.base + " 도착 " + r.ref_min + "분(참고)"));
       if (r.vehicle) sub.push(esc("차량 " + r.vehicle));
     }
     if (r.source === "daegu") sub.push("대구 정보");
@@ -358,7 +401,7 @@
   var api = {
     HOLD_MS: HOLD_MS, SNAP_MS: SNAP_MS, FRESH_MS: FRESH_MS,
     esc: esc, clockHM: clockHM, clockHMS: clockHMS,
-    parseChilgok: parseChilgok, parseDaegu: parseDaegu, directionRows: directionRows, tagoRows: tagoRows, stationsOf: stationsOf,
+    parseChilgok: parseChilgok, parseDaegu: parseDaegu, directionRows: directionRows, tagoRows: tagoRows, tagoDirectRows: tagoDirectRows, stationsOf: stationsOf,
     newState: newState, ingest: ingest, fail: fail, view: view, save: save, restore: restore,
     countdownText: countdownText, stopsText: stopsText, renderRow: renderRow, renderCard: renderCard,
     renderStats: renderStats, todayPassed: todayPassed, kstDate: kstDate, renderReference: renderReference
