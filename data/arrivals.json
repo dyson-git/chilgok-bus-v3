@@ -272,6 +272,12 @@
     "routeid": "30020",
     "routeno": "300",
     "source": "bis"
+   },
+   {
+    "arrival_time": "2026-10-26T17:24:13+09:00",
+    "routeid": "DGB1000009300",
+    "routeno": "급행9-3",
+    "source": "tago"
    }
   ]
  },
@@ -551,6 +557,18 @@
    },
    {
     "arrival_time": "2026-10-26T16:04:31+09:00",
+    "routeid": "DGB1000009300",
+    "routeno": "급행9-3",
+    "source": "tago"
+   },
+   {
+    "arrival_time": "2026-10-26T17:33:19+09:00",
+    "routeid": "GMB88510",
+    "routeno": "885",
+    "source": "tago"
+   },
+   {
+    "arrival_time": "2026-10-26T18:03:49+09:00",
     "routeid": "DGB1000009300",
     "routeno": "급행9-3",
     "source": "tago"
