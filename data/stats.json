@@ -54,7 +54,7 @@
    "min_time": "11:23",
    "max_time": "11:24",
    "avg_time": "11:24",
-   "sample_count": 2
+   "sample_count": 3
   },
   {
    "routeno": "300",
@@ -223,8 +223,8 @@
    "slot_index": 4,
    "min_time": "10:58",
    "max_time": "11:05",
-   "avg_time": "11:02",
-   "sample_count": 2
+   "avg_time": "11:01",
+   "sample_count": 3
   },
   {
    "routeno": "급행9-3",
