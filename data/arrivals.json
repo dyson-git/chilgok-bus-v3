@@ -406,6 +406,12 @@
     "routeid": "dgb:1000009300",
     "routeno": "급행9-3",
     "source": "bis"
+   },
+   {
+    "arrival_time": "2026-10-27T17:28:58+09:00",
+    "routeid": "dgb:1000009300",
+    "routeno": "급행9-3",
+    "source": "bis"
    }
   ]
  },
