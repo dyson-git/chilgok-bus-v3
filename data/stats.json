@@ -75,10 +75,10 @@
   {
    "routeno": "300",
    "slot_index": 1,
-   "min_time": "12:22",
+   "min_time": "12:21",
    "max_time": "12:22",
    "avg_time": "12:22",
-   "sample_count": 1
+   "sample_count": 2
   },
   {
    "routeno": "급행9-3",
