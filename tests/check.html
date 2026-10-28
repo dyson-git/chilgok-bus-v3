@@ -349,6 +349,22 @@ run("tago fetched_at", function () {
   eq("동명 직접 시간도", d.map(function (r) { return r.at; }), [T - 300000]);
 });
 
+// 동명 출발 마을버스: 시간표 출발 시각에 고정(왜관 쪽 운행은 시각을 몰라 안 보임)
+run("fixedDepart", function () {
+  var tt = { routes: [
+    { routeno: "36-1", trips: [{ from: "왜관", to: "동명", depart: "08:00", arrive: "08:35" }, { from: "동명", to: "왜관", depart: "18:50", arrive: "19:25" }] },
+    { routeno: "34-1", trips: [{ from: "송산3리", to: "왜관", depart: "17:05", arrive: "18:10" }] }
+  ] };
+  var at = function (h, m) { return Date.UTC(2026, 9, 28, h, m) - 9 * 3600000; };
+  eq("18:30: 36-1 동명 18:50 출발, 20분 뒤", pick(V.fixedDepartRows(CFG, tt, "hakmyeong", at(18, 30), []), ["route_no", "end"]), [["36-1", at(18, 50)]]);
+  eq("18:10: 30분 전보다 이르면 안 보임", V.fixedDepartRows(CFG, tt, "hakmyeong", at(18, 10), []), []);
+  eq("18:53: 출발 2분 지나면 뺀다", V.fixedDepartRows(CFG, tt, "hakmyeong", at(18, 53), []), []);
+  eq("동명행·왜관 출발은 없음", [V.fixedDepartRows(CFG, tt, "dongmyeong", at(18, 30), []), V.fixedDepartRows(CFG, tt, "hakmyeong", at(7, 50), [])], [[], []]);
+  eq("실시간 줄이 있으면 뺀다", V.fixedDepartRows(CFG, tt, "hakmyeong", at(18, 30), ["36-1"]), []);
+  var h = V.renderRow(V.fixedDepartRows(CFG, tt, "hakmyeong", at(18, 30), [])[0], at(18, 30));
+  yes("화면: 남은 시간 + 동명교통 출발 시간표", h.indexOf("20분 00초 뒤") >= 0 && h.indexOf("동명교통 18:50 출발") >= 0 && h.indexOf("기준") < 0);
+});
+
 document.getElementById("out").textContent = out.join("\n");
 </script>
 </body></html>

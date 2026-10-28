@@ -389,6 +389,25 @@
     return best ? note + " · 시간표 " + best.s.avg_time + "(" + best.s.sample_count + "일 기록)" : note;
   }
 
+  // 동명 출발 마을버스(cfg.fixed_depart): 시간표 출발 시각 30분 전부터 출발 2분 뒤까지 그 시각으로 센다. 실시간 줄이 있는 노선은 뺀다.
+  function fixedDepartRows(cfg, tt, dir, now, liveNos) {
+    var fd = cfg && cfg.fixed_depart;
+    if (!fd || fd.direction !== dir || !tt || !Array.isArray(tt.routes)) return [];
+    var day = Math.floor((now + 9 * 3600000) / 86400000) * 86400000 - 9 * 3600000, out = [];
+    tt.routes.forEach(function (r) {
+      if (fd.routes.indexOf(r.routeno) < 0 || (liveNos || []).indexOf(r.routeno) >= 0) return;
+      (r.trips || []).forEach(function (t) {
+        var m = /^(\d\d):(\d\d)$/.exec((t && t.depart) || "");
+        if (!m || t.from !== fd.from) return;
+        var end = day + (Number(m[1]) * 60 + Number(m[2])) * 60000;
+        if (now < end - 30 * 60000 || now > end + 2 * 60000) return;
+        out.push({ key: "fixed:" + r.routeno + ":" + t.depart, dir: dir, route_no: r.routeno, end: end, live: true, stops: null,
+                   label: fd.board + " " + t.depart + " 출발 · 운행업체 시간표(실시간 위치 없음)" });
+      });
+    });
+    return out;
+  }
+
   // ---- 시간표(최근 실제 기록) ----
   function renderStats(rows) {
     if (!rows || !rows.length) return '<p class="note">아직 기록이 모이는 중이에요</p>';
@@ -432,7 +451,7 @@
     newState: newState, ingest: ingest, fail: fail, view: view, save: save, restore: restore,
     countdownText: countdownText, stopsText: stopsText, renderRow: renderRow, renderCard: renderCard,
     renderStats: renderStats, todayPassed: todayPassed, kstDate: kstDate, renderReference: renderReference,
-    lateNote: lateNote
+    lateNote: lateNote, fixedDepartRows: fixedDepartRows
   };
   root.V3 = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
