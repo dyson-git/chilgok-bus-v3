@@ -111,8 +111,7 @@
       try {
         var rows = V.view(state, d, now);
         rows.forEach(function (r) { r.late = V.lateNote(CFG, times.stats, d, r); });
-        el.card[d].innerHTML = V.renderCard(d, rows, health(d), now) +
-          V.renderVillage(V.villageRows(CFG, times.ref, d, now, rows.map(function (r) { return r.route_no; })));
+        el.card[d].innerHTML = V.renderCard(d, rows, health(d), now);
       } catch (e) {
         el.card[d].innerHTML = '<h2>' + V.esc(d === "dongmyeong" ? "동명 가는 버스" : "학명리 가는 버스") + '</h2><div class="warn">화면을 그리다 문제가 생겼어요. 새로고침 해주세요</div>';
         if (window.console) console.error(e);
@@ -209,7 +208,7 @@
   drawTimes();
   check();
   loadTimes();
-  getJson("https://dyson-git.github.io/chilgok-bus-eta/timetable.json").then(function (j) { if (j) { times.ref = j; drawTimes(); drawCards(); } });
+  getJson("https://dyson-git.github.io/chilgok-bus-eta/timetable.json").then(function (j) { if (j) { times.ref = j; drawTimes(); } });
   // 크롬 '앱 설치' 조건(서비스 워커). 없어도 화면은 그대로 동작한다.
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(function () {});
 })();

@@ -380,34 +380,6 @@
     return best ? note + " · 시간표 " + best.s.avg_time + "(" + best.s.sample_count + "일 기록)" : note;
   }
 
-  // 운행업체 시간표(timetable.json)에서 실시간 위치 없는 마을버스(cfg.village)의 오늘 남은 운행. 동명행은 동명·송산3리 도착이
-  // 지나지 않은 운행, 학명리행은 동명·송산3리 출발이 10분 넘게 지나지 않은 운행. 실시간 줄이 있는 노선은 뺀다. 노선마다 1개, 최대 3개.
-  function villageRows(cfg, tt, dir, now, liveNos) {
-    var vc = cfg && cfg.village, rule = vc && vc[dir];
-    if (!rule || !tt || !Array.isArray(tt.routes)) return [];
-    var hm = clockHM(now).split(":"), cur = Number(hm[0]) * 60 + Number(hm[1]), out = [];
-    function mins(t) { var m = /^(\d\d):(\d\d)$/.exec(t || ""); return m ? Number(m[1]) * 60 + Number(m[2]) : null; }
-    tt.routes.forEach(function (r) {
-      if (vc.routes.indexOf(r.routeno) < 0 || (liveNos || []).indexOf(r.routeno) >= 0) return;
-      var next = null;
-      (r.trips || []).forEach(function (t) {
-        var key = rule.to ? (rule.to.indexOf(t.to) >= 0 ? mins(t.arrive) : null) : (rule.from.indexOf(t.from) >= 0 ? mins(t.depart) : null);
-        if (key === null || key < cur - (rule.to ? 0 : 10)) return;
-        if (!next || key < next.key) next = { key: key, route_no: r.routeno, from: t.from, depart: t.depart, to: t.to, arrive: t.arrive || null };
-      });
-      if (next) out.push(next);
-    });
-    out.sort(function (a, b) { return a.key - b.key; });
-    return out.slice(0, 3);
-  }
-  function renderVillage(rows) {
-    if (!rows.length) return "";
-    return '<p class="note">실시간 위치가 없는 마을버스 · 운행업체 시간표</p>' + rows.map(function (v) {
-      return '<div class="bus carried"><div class="top"><span class="no">' + esc(v.route_no) + '번</span><span class="when">시간표</span></div>' +
-        '<div class="where">' + esc(v.from + " " + v.depart + " 출발 → " + v.to + (v.arrive ? " " + v.arrive + " 도착" : "")) + "</div></div>";
-    }).join("");
-  }
-
   // ---- 시간표(최근 실제 기록) ----
   function renderStats(rows) {
     if (!rows || !rows.length) return '<p class="note">아직 기록이 모이는 중이에요</p>';
@@ -451,7 +423,7 @@
     newState: newState, ingest: ingest, fail: fail, view: view, save: save, restore: restore,
     countdownText: countdownText, stopsText: stopsText, renderRow: renderRow, renderCard: renderCard,
     renderStats: renderStats, todayPassed: todayPassed, kstDate: kstDate, renderReference: renderReference,
-    lateNote: lateNote, villageRows: villageRows, renderVillage: renderVillage
+    lateNote: lateNote
   };
   root.V3 = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;

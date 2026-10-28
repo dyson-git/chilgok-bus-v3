@@ -334,26 +334,6 @@ run("late", function () {
   yes("줄에 보인다", V.renderRow({ route_no: "급행9-3", end: T, live: true, late: "대구 예상보다 늦게 올 수 있음" }, T - 60000).indexOf("늦게 올 수 있음") >= 0);
 });
 
-// 34·36 마을버스: 실시간이 없어 운행업체 시간표의 오늘 남은 운행만
-run("village", function () {
-  var tt = { routes: [
-    { routeno: "34", trips: [{ from: "왜관", to: "송산3리", depart: "06:20", arrive: "07:05" }, { from: "송산3리", to: "왜관", depart: "07:05", arrive: "07:50" }] },
-    { routeno: "34-1", trips: [{ from: "왜관", to: "송산3리", depart: "10:20", arrive: "11:25" }, { from: "송산3리", to: "왜관", depart: "11:25", arrive: "12:30" },
-                               { from: "왜관", to: "송산3리", depart: "16:00", arrive: "17:05" }, { from: "송산3리", to: "왜관", depart: "17:05", arrive: "18:10" }] },
-    { routeno: "36-1", trips: [{ from: "왜관", to: "동명", depart: "08:00", arrive: "08:35" }, { from: "동명", to: "왜관", depart: "18:50", arrive: "19:25" }] },
-    { routeno: "300", trips: [{ from: "가산2리", to: "대구(북부)", depart: "07:00", arrive: "08:10" }] }
-  ] };
-  var at = function (h, m) { return Date.UTC(2026, 9, 26, h, m) - 9 * 3600000; };
-  eq("동명행 07:00: 동명·송산3리 도착이 남은 운행(노선마다 다음 1개)",
-    pick(V.villageRows(CFG, tt, "dongmyeong", at(7, 0), []), ["route_no", "from", "depart", "to"]),
-    [["34", "왜관", "06:20", "송산3리"], ["36-1", "왜관", "08:00", "동명"], ["34-1", "왜관", "10:20", "송산3리"]]);
-  eq("학명리행 11:30: 출발 10분 안 지난 것까지", pick(V.villageRows(CFG, tt, "hakmyeong", at(11, 30), []), ["route_no", "depart"]),
-    [["34-1", "11:25"], ["36-1", "18:50"]]);
-  eq("실시간 줄이 있는 노선은 뺀다", pick(V.villageRows(CFG, tt, "hakmyeong", at(11, 30), ["34-1"]), ["route_no"]), [["36-1"]]);
-  eq("시간표 없음 -> 빈 목록", V.villageRows(CFG, null, "dongmyeong", at(7, 0), []), []);
-  yes("화면", V.renderVillage(V.villageRows(CFG, tt, "hakmyeong", at(11, 30), [])).indexOf("송산3리 11:25 출발 → 왜관 12:30 도착") >= 0);
-});
-
 document.getElementById("out").textContent = out.join("\n");
 </script>
 </body></html>
