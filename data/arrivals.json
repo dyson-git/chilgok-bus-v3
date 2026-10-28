@@ -498,6 +498,12 @@
     "routeid": "88520",
     "routeno": "885",
     "source": "bis"
+   },
+   {
+    "arrival_time": "2026-10-28T11:23:07+09:00",
+    "routeid": "DGB1000009300",
+    "routeno": "급행9-3",
+    "source": "tago"
    }
   ]
  },
@@ -931,6 +937,12 @@
    },
    {
     "arrival_time": "2026-10-28T10:01:46+09:00",
+    "routeid": "DGB1000009300",
+    "routeno": "급행9-3",
+    "source": "tago"
+   },
+   {
+    "arrival_time": "2026-10-28T12:01:39+09:00",
     "routeid": "DGB1000009300",
     "routeno": "급행9-3",
     "source": "tago"
