@@ -408,6 +408,20 @@
     return out;
   }
 
+  // 사용자가 알려준 도착 시각(cfg.fixed_arrive): 30분 전부터 2분 뒤까지 그 시각으로 센다. 실시간 줄이 있는 노선은 뺀다.
+  function fixedArriveRows(cfg, dir, now, liveNos) {
+    var day = Math.floor((now + 9 * 3600000) / 86400000) * 86400000 - 9 * 3600000, out = [];
+    ((cfg && cfg.fixed_arrive) || []).forEach(function (f) {
+      var m = /^(\d\d):(\d\d)$/.exec(f.time || "");
+      if (!m || f.direction !== dir || (liveNos || []).indexOf(f.route) >= 0) return;
+      var end = day + (Number(m[1]) * 60 + Number(m[2])) * 60000;
+      if (now < end - 30 * 60000 || now > end + 2 * 60000) return;
+      out.push({ key: "fixed:" + f.route + ":" + f.time, dir: dir, route_no: f.route, end: end, live: true, stops: null,
+                 label: f.board + " " + f.time + "쯤 도착 · 실제로 본 시각(실시간 위치 없음)" });
+    });
+    return out;
+  }
+
   // ---- 시간표(최근 실제 기록) ----
   function renderStats(rows) {
     if (!rows || !rows.length) return '<p class="note">아직 기록이 모이는 중이에요</p>';
@@ -451,7 +465,7 @@
     newState: newState, ingest: ingest, fail: fail, view: view, save: save, restore: restore,
     countdownText: countdownText, stopsText: stopsText, renderRow: renderRow, renderCard: renderCard,
     renderStats: renderStats, todayPassed: todayPassed, kstDate: kstDate, renderReference: renderReference,
-    lateNote: lateNote, fixedDepartRows: fixedDepartRows
+    lateNote: lateNote, fixedDepartRows: fixedDepartRows, fixedArriveRows: fixedArriveRows
   };
   root.V3 = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;

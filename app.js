@@ -111,7 +111,8 @@
       try {
         var rows = V.view(state, d, now);
         rows.forEach(function (r) { r.late = V.lateNote(CFG, times.stats, d, r); });
-        var fixed = V.fixedDepartRows(CFG, times.ref, d, now, rows.map(function (r) { return r.route_no; }));
+        var nos = rows.map(function (r) { return r.route_no; });
+        var fixed = V.fixedDepartRows(CFG, times.ref, d, now, nos).concat(V.fixedArriveRows(CFG, d, now, nos));
         if (fixed.length) {
           rows = rows.concat(fixed);
           rows.sort(function (a, b) { return (typeof a.end === "number" ? a.end : 9e15) - (typeof b.end === "number" ? b.end : 9e15); });

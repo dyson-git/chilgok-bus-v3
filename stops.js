@@ -81,6 +81,10 @@ window.V3_STOPS = {
   // 실시간 위치가 없는 마을버스 중 동명에서 출발하는 운행(사용자 10/28: 동명 출발 시각은 맞다, 왜관 쪽은 모름).
   // 운행업체 시간표(timetable.json)의 동명 출발 시각에 고정해 '몇 분 뒤 출발'로만 보여준다. 왜관에서 오는 운행은 시각을 몰라 보이지 않는다.
   fixed_depart: { direction: "hakmyeong", from: "동명", board: "동명교통", routes: ["36", "36-1"] },
+  // 사용자가 알려준 실제 도착 시각(실시간 위치 없는 마을버스). 10/28: 36-1(왜관 08:00 출발) 학명리 건너2 8시 40분쯤.
+  fixed_arrive: [
+    { direction: "dongmyeong", route: "36-1", time: "08:40", board: "학명리 건너2" }
+  ],
   // 칠곡3 변형(대구 노선 id) - collector/config.py 주석의 경로
   labels: {
     "dgb:4090003001": "예술대·경운대 경유",

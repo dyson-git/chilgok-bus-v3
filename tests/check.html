@@ -365,6 +365,15 @@ run("fixedDepart", function () {
   yes("화면: 남은 시간 + 동명교통 출발 시간표", h.indexOf("20분 00초 뒤") >= 0 && h.indexOf("동명교통 18:50 출발") >= 0 && h.indexOf("기준") < 0);
 });
 
+// 사용자가 알려준 도착 시각: 36-1 학명리 건너2 08:40쯤(동명행)
+run("fixedArrive", function () {
+  var at = function (h, m) { return Date.UTC(2026, 9, 28, h, m) - 9 * 3600000; };
+  eq("08:20: 36-1, 08:40 기준 20분 뒤", pick(V.fixedArriveRows(CFG, "dongmyeong", at(8, 20), []), ["route_no", "end"]), [["36-1", at(8, 40)]]);
+  eq("08:05·08:43: 안 보임", [V.fixedArriveRows(CFG, "dongmyeong", at(8, 5), []), V.fixedArriveRows(CFG, "dongmyeong", at(8, 43), [])], [[], []]);
+  eq("학명리행·실시간 있으면 없음", [V.fixedArriveRows(CFG, "hakmyeong", at(8, 20), []), V.fixedArriveRows(CFG, "dongmyeong", at(8, 20), ["36-1"])], [[], []]);
+  yes("화면", V.renderRow(V.fixedArriveRows(CFG, "dongmyeong", at(8, 20), [])[0], at(8, 20)).indexOf("학명리 건너2 08:40쯤 도착") >= 0);
+});
+
 document.getElementById("out").textContent = out.join("\n");
 </script>
 </body></html>
