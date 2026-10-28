@@ -5,24 +5,24 @@
    "slot_index": 1,
    "min_time": "06:45",
    "max_time": "06:50",
-   "avg_time": "06:47",
-   "sample_count": 3
+   "avg_time": "06:48",
+   "sample_count": 4
   },
   {
    "routeno": "급행9-3",
    "slot_index": 1,
    "min_time": "07:22",
-   "max_time": "07:24",
-   "avg_time": "07:23",
-   "sample_count": 2
+   "max_time": "07:25",
+   "avg_time": "07:24",
+   "sample_count": 3
   },
   {
    "routeno": "칠곡3",
    "slot_index": 2,
    "min_time": "08:35",
-   "max_time": "08:35",
-   "avg_time": "08:35",
-   "sample_count": 4
+   "max_time": "08:40",
+   "avg_time": "08:36",
+   "sample_count": 5
   },
   {
    "routeno": "칠곡3",
@@ -38,15 +38,15 @@
    "min_time": "09:24",
    "max_time": "09:27",
    "avg_time": "09:26",
-   "sample_count": 2
+   "sample_count": 3
   },
   {
    "routeno": "칠곡3",
    "slot_index": 4,
    "min_time": "09:50",
    "max_time": "09:55",
-   "avg_time": "09:52",
-   "sample_count": 4
+   "avg_time": "09:53",
+   "sample_count": 5
   },
   {
    "routeno": "칠곡3",
@@ -54,6 +54,14 @@
    "min_time": "10:05",
    "max_time": "10:05",
    "avg_time": "10:05",
+   "sample_count": 1
+  },
+  {
+   "routeno": "885",
+   "slot_index": 1,
+   "min_time": "10:08",
+   "max_time": "10:08",
+   "avg_time": "10:08",
    "sample_count": 1
   },
   {
@@ -224,23 +232,31 @@
    "min_time": "07:48",
    "max_time": "07:51",
    "avg_time": "07:50",
-   "sample_count": 3
+   "sample_count": 4
   },
   {
    "routeno": "칠곡3",
    "slot_index": 2,
    "min_time": "07:58",
    "max_time": "08:04",
-   "avg_time": "08:00",
-   "sample_count": 3
+   "avg_time": "08:01",
+   "sample_count": 4
   },
   {
    "routeno": "칠곡3",
    "slot_index": 3,
    "min_time": "09:42",
    "max_time": "09:51",
-   "avg_time": "09:45",
-   "sample_count": 3
+   "avg_time": "09:47",
+   "sample_count": 4
+  },
+  {
+   "routeno": "885",
+   "slot_index": 1,
+   "min_time": "09:58",
+   "max_time": "09:58",
+   "avg_time": "09:58",
+   "sample_count": 1
   },
   {
    "routeno": "급행9-3",
@@ -248,7 +264,7 @@
    "min_time": "10:01",
    "max_time": "10:03",
    "avg_time": "10:02",
-   "sample_count": 4
+   "sample_count": 5
   },
   {
    "routeno": "300",
@@ -276,7 +292,7 @@
   },
   {
    "routeno": "885",
-   "slot_index": 1,
+   "slot_index": 2,
    "min_time": "12:53",
    "max_time": "12:53",
    "avg_time": "12:53",
@@ -324,7 +340,7 @@
   },
   {
    "routeno": "885",
-   "slot_index": 2,
+   "slot_index": 3,
    "min_time": "17:28",
    "max_time": "17:33",
    "avg_time": "17:30",
