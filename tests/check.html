@@ -334,6 +334,21 @@ run("late", function () {
   yes("줄에 보인다", V.renderRow({ route_no: "급행9-3", end: T, live: true, late: "대구 예상보다 늦게 올 수 있음" }, T - 60000).indexOf("늦게 올 수 있음") >= 0);
 });
 
+// 10/28 885: 중계 /all 은 묵은 값일 수 있다 -> 남은 시간은 받아 둔 시각(fetched_at) 기준
+run("tago fetched_at", function () {
+  var T = Date.UTC(2026, 9, 28, 1, 0);
+  var all = { fetched_at: new Date(T - 300000).toISOString(), results: { "37050:GMB2479": tagoNode([ti("GMB88510", "885", 199, 1)]) } };
+  var rows = V.tagoRows(CFG, "2479", all);
+  yes("TAGO 줄에 받아 둔 시각", rows.length && rows.every(function (r) { return r.at === T - 300000; }));
+  var st = V.newState();
+  V.ingest(st, "2479", rows, T);
+  var v = V.view(st, "dongmyeong", T);
+  eq("5분 묵은 '3분' -> 이미 지난 시각(곧 도착), '3분 뒤' 아님", v.map(function (r) { return r.end; }), [T - 300000 + 180000]);
+  yes("시각 없으면 받은 때 기준", V.tagoRows(CFG, "2479", { results: all.results }).every(function (r) { return r.at === null; }));
+  var d = V.tagoDirectRows(CFG, { fetched_at: all.fetched_at, results: { "22:DGB3690003750": tagoNode([ti("DGB1000009300", "급행9-3", 300, 2)]) } });
+  eq("동명 직접 시간도", d.map(function (r) { return r.at; }), [T - 300000]);
+});
+
 document.getElementById("out").textContent = out.join("\n");
 </script>
 </body></html>

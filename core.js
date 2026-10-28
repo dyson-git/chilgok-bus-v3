@@ -149,6 +149,13 @@
     if (list === undefined || list === null) return [];
     return Array.isArray(list) ? list : [list];
   }
+  // 중계 /all 은 몇 분마다 받아 둔 값(fetched_at)이다. 남은 시간은 그 시각 기준 - 받은 때 기준으로 세면 묵은 값이 계속 '몇 분 뒤'로
+  // 밀린다(10/28 885: 09:55 TAGO "3분" -> 버스는 동명에 갔는데 '2분 뒤'). 시각이 없거나 이상하면 null(받은 때 기준).
+  function snapAt(all) {
+    var at = all && typeof all.fetched_at === "string" ? Date.parse(all.fetched_at) : NaN;
+    return isFinite(at) ? at : null;
+  }
+
   function tagoRows(cfg, sid, all) {
     var tc = cfg && cfg.tago && cfg.tago.stations && cfg.tago.stations[sid], st = cfg && cfg.stops && cfg.stops[sid];
     var results = all && all.results;
@@ -188,7 +195,8 @@
       });
       rows = order.map(function (k) { return best[k]; });
     }
-    rows.forEach(function (r) { r.source = "tago"; });
+    var at = snapAt(all);
+    rows.forEach(function (r) { r.source = "tago"; r.at = at; });
     return rows;
   }
 
@@ -215,7 +223,8 @@
         var base = td.direction + ":" + id, r = {
           key: base + ":direct", direct_of: base, dir: td.direction, sid: "tago:direct", route_id: id, route_no: clean(it.routeno || ""),
           label: null, board: (cfg.tago.names && cfg.tago.names[node]) || null, stops: isFinite(cnt) && cnt >= 0 ? cnt : null,
-          minutes: Math.round(sec / 60), ref_min: null, base: null, where: null, turn: null, depart: null, vehicle: null, source: "tago"
+          minutes: Math.round(sec / 60), ref_min: null, base: null, where: null, turn: null, depart: null, vehicle: null, source: "tago",
+          at: snapAt(all)
         };
         if (!best[r.key]) order.push(r.key);
         if (!best[r.key] || r.minutes < best[r.key].minutes) best[r.key] = r;
@@ -245,7 +254,7 @@
       var m = state.memo[r.key];
       var end = m && isNum(m.end) && t - m.end <= HOLD_MS ? m.end : null, recvAt = m ? m.recvAt || null : null;
       if (isNum(r.minutes)) {
-        var target = t + r.minutes * 60000;
+        var target = (isNum(r.at) && r.at <= t ? r.at : t) + r.minutes * 60000;  // r.at: 그 값을 받아 둔 시각(TAGO 중계)
         if (end === null || Math.abs(end - target) >= SNAP_MS) end = target;
         recvAt = t;
       }
