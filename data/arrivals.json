@@ -970,6 +970,18 @@
     "routeid": "DGB1000009300",
     "routeno": "급행9-3",
     "source": "tago"
+   },
+   {
+    "arrival_time": "2026-10-28T14:03:12+09:00",
+    "routeid": "DGB1000009300",
+    "routeno": "급행9-3",
+    "source": "tago"
+   },
+   {
+    "arrival_time": "2026-10-28T14:11:38+09:00",
+    "routeid": "30010",
+    "routeno": "300",
+    "source": "bis"
    }
   ]
  }
