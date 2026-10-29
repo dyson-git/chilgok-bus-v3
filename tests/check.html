@@ -237,7 +237,7 @@ run("render", function () {
   var live = { key: "hakmyeong:30020", route_no: "300", stops: 3, end: T0 + 360000, live: true, seenAt: T0, board: "동명면행정복지센터", ref_min: 16, base: "학명리" };
   var h = V.renderRow(live, T0);
   yes("시간이 있으면 크게 남은 시간, 아래에 정류장 수(항상)·타는 곳·추정 방식", h.indexOf("6분 00초 뒤") >= 0 && h.indexOf("3정류장 전") >= 0 &&
-    h.indexOf("동명면행정복지센터에서 타기") >= 0 && h.indexOf("학명리 도착 16분(참고)") >= 0 && h.indexOf('data-end="' + (T0 + 360000) + '"') >= 0);
+    h.indexOf("동명우체국 앞에서 타기") >= 0 && h.indexOf("학명리 도착 16분(참고)") >= 0 && h.indexOf('data-end="' + (T0 + 360000) + '"') >= 0);
   var carried = { key: "dongmyeong:30010", route_no: "300", stops: 7, end: T0 + 300000, live: false, seenAt: T0 - 120000, board: "학명리 건너2" };
   var c = V.renderRow(carried, T0), hm = new Date(T0 - 120000);
   var hhmm = ("0" + hm.getHours()).slice(-2) + ":" + ("0" + hm.getMinutes()).slice(-2);
@@ -317,7 +317,7 @@ run("tagoDirect", function () {
   eq("직접 시간이 있으면 한 줄로 합쳐 그 시간으로 센다(정류장 수·승차 정류장도 TAGO 값)",
     pick(v2, ["key", "stops", "end", "board", "time_src", "where"]), [["hakmyeong:dgb:1000009300", 2, T0 + 300000, "동명면우체국", "tago", "송산"]]);
   var html = V.renderRow(v2[0], T0);
-  yes("합친 줄: 승차 정류장 도착 시간(TAGO) + 지금 위치", html.indexOf("5분 00초 뒤") >= 0 && html.indexOf("지금 위치 송산") >= 0 && html.indexOf("동명면우체국 도착 시간 TAGO") >= 0);
+  yes("합친 줄: 승차 정류장 도착 시간(TAGO) + 지금 위치", html.indexOf("5분 00초 뒤") >= 0 && html.indexOf("지금 위치 송산") >= 0 && html.indexOf("동명우체국 앞 도착 시간 TAGO") >= 0);
   var only = V.renderRow(v1[0], T0);
   yes("시간 없는 줄: 정류장 수를 크게, 학명리 시간은 참고로만", /class="when"[^>]*>2정류장 전</.test(only) && only.indexOf("학명리(등골마을입구) 도착 12분(참고)") >= 0 && only.indexOf("data-end") < 0);
   eq("저장본 형식이 바뀌면 예전 기억(빼서 만든 시간)은 버린다", Object.keys(V.restore(JSON.stringify({ v: 1, memo: { "hakmyeong:x": { end: T0 + 1000, seenAt: T0 } } }), T0).memo), []);
@@ -362,7 +362,7 @@ run("fixedDepart", function () {
   eq("동명행·왜관 출발은 없음", [V.fixedDepartRows(CFG, tt, "dongmyeong", at(18, 30), []), V.fixedDepartRows(CFG, tt, "hakmyeong", at(7, 50), [])], [[], []]);
   eq("실시간 줄이 있으면 뺀다", V.fixedDepartRows(CFG, tt, "hakmyeong", at(18, 30), ["36-1"]), []);
   var h = V.renderRow(V.fixedDepartRows(CFG, tt, "hakmyeong", at(18, 30), [])[0], at(18, 30));
-  yes("화면: 남은 시간 + 동명교통 출발 시간표", h.indexOf("20분 00초 뒤") >= 0 && h.indexOf("동명교통 18:50 출발") >= 0 && h.indexOf("기준") < 0);
+  yes("화면: 남은 시간 + 동명교통 출발 시간표", h.indexOf("20분 00초 뒤") >= 0 && h.indexOf("동명정류소 18:50 출발") >= 0 && h.indexOf("기준") < 0);
 });
 
 // 사용자가 알려준 도착 시각: 36-1 학명리 건너2 08:40쯤(동명행)

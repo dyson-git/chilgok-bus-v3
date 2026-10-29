@@ -324,6 +324,11 @@
   }
   function stopsText(n) { return isNum(n) ? (n === 0 ? "정류장에 있음" : n + "정류장 전") : ""; }
 
+  // 화면에 쓰는 동명 정류장 이름(사용자 10/29): 행정복지센터 정류장 = 동명우체국 앞, 동명교통 = 동명정류소.
+  // 9-3 은 우체국(대구 등록 '동명면우체국')에만, 마을버스는 동명정류소에만, 대부분은 두 곳 다 선다. 데이터 이름은 그대로 둔다.
+  var PLACE = { "동명면행정복지센터": "동명우체국 앞", "동명면우체국": "동명우체국 앞", "동명교통": "동명정류소" };
+  function place(name) { return PLACE[name] || name; }
+
   function renderRow(r, now) {
     var hasEnd = isNum(r.end), hasStops = isNum(r.stops), big = "", attr = "", sub = [];
     if (r.turn) {
@@ -334,9 +339,9 @@
       if (hasEnd) { big = countdownText(r.end, now); attr = ' role="timer" data-end="' + r.end + '"'; if (hasStops) sub.push(esc(stopsText(r.stops))); }
       else if (hasStops) big = stopsText(r.stops);
       else if (r.depart) big = "기점 " + r.depart + " 출발 예정";
-      if (r.board) sub.push(esc(r.board + "에서 타기"));
+      if (r.board) sub.push(esc(place(r.board) + "에서 타기"));
       if (r.label) sub.push(esc(r.label));
-      if (r.time_src === "tago" && r.board) sub.push(esc(r.board + " 도착 시간 TAGO"));
+      if (r.time_src === "tago" && r.board) sub.push(esc(place(r.board) + " 도착 시간 TAGO"));
       if (r.where) sub.push(esc("지금 위치 " + r.where));
       if (isNum(r.ref_min) && r.base) sub.push(esc(r.base + " 도착 " + r.ref_min + "분(참고)"));
       if (r.vehicle) sub.push(esc("차량 " + r.vehicle));
@@ -351,7 +356,7 @@
 
   var CARD = {
     dongmyeong: { title: "동명 가는 버스", sub: "학명리 건너2 정류장에서 타기" },
-    hakmyeong: { title: "학명리 가는 버스", sub: "동명 정류장(행정복지센터·우체국·동명교통)에서 타기" }
+    hakmyeong: { title: "학명리 가는 버스", sub: "동명우체국 앞 · 동명정류소에서 타기" }
   };
 
   // health = {ok, fail, total, waiting}: 이번 확인에서 그 방향 정류장 중 받은 수 / 못 받은 수 / 전체 / 아직 기다리는 수
@@ -402,7 +407,7 @@
         var end = day + (Number(m[1]) * 60 + Number(m[2])) * 60000;
         if (now < end - 30 * 60000 || now > end + 2 * 60000) return;
         out.push({ key: "fixed:" + r.routeno + ":" + t.depart, dir: dir, route_no: r.routeno, end: end, live: true, stops: null,
-                   label: fd.board + " " + t.depart + " 출발 · 운행업체 시간표(실시간 위치 없음)" });
+                   label: place(fd.board) + " " + t.depart + " 출발 · 운행업체 시간표(실시간 위치 없음)" });
       });
     });
     return out;
