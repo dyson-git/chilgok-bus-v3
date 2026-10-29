@@ -75,10 +75,10 @@
   {
    "routeno": "300",
    "slot_index": 1,
-   "min_time": "12:21",
+   "min_time": "12:15",
    "max_time": "12:22",
-   "avg_time": "12:22",
-   "sample_count": 2
+   "avg_time": "12:19",
+   "sample_count": 3
   },
   {
    "routeno": "885",
@@ -304,7 +304,7 @@
    "min_time": "11:59",
    "max_time": "12:03",
    "avg_time": "12:01",
-   "sample_count": 6
+   "sample_count": 7
   },
   {
    "routeno": "885",
