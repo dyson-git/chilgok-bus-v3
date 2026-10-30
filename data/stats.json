@@ -318,17 +318,17 @@
    "routeno": "300",
    "slot_index": 1,
    "min_time": "10:49",
-   "max_time": "10:53",
-   "avg_time": "10:51",
-   "sample_count": 2
+   "max_time": "10:54",
+   "avg_time": "10:52",
+   "sample_count": 3
   },
   {
    "routeno": "칠곡3",
    "slot_index": 4,
    "min_time": "10:58",
    "max_time": "11:09",
-   "avg_time": "11:03",
-   "sample_count": 5
+   "avg_time": "11:04",
+   "sample_count": 6
   },
   {
    "routeno": "급행9-3",

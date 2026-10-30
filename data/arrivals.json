@@ -1482,6 +1482,18 @@
     "routeid": "GMB88510",
     "routeno": "885",
     "source": "tago"
+   },
+   {
+    "arrival_time": "2026-10-30T10:54:24+09:00",
+    "routeid": "30010",
+    "routeno": "300",
+    "source": "bis"
+   },
+   {
+    "arrival_time": "2026-10-30T11:04:25+09:00",
+    "routeid": "DGB4090003001",
+    "routeno": "칠곡3",
+    "source": "tago"
    }
   ]
  }
