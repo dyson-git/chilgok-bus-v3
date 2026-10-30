@@ -413,16 +413,18 @@
     return out;
   }
 
-  // 사용자가 알려준 도착 시각(cfg.fixed_arrive): 30분 전부터 2분 뒤까지 그 시각으로 센다. 실시간 줄이 있는 노선은 뺀다.
+  // 사용자가 알려준 시각(cfg.fixed_arrive): 30분 전부터 그 시각(범위면 이른 쪽)으로 세고, 그 시각(범위면 늦은 쪽) 2분 뒤에 뺀다.
+  // 실시간 줄이 있는 노선은 뺀다.
   function fixedArriveRows(cfg, dir, now, liveNos) {
     var day = Math.floor((now + 9 * 3600000) / 86400000) * 86400000 - 9 * 3600000, out = [];
+    function at(hm) { var m = /^(\d\d):(\d\d)$/.exec(hm || ""); return m ? day + (Number(m[1]) * 60 + Number(m[2])) * 60000 : null; }
     ((cfg && cfg.fixed_arrive) || []).forEach(function (f) {
-      var m = /^(\d\d):(\d\d)$/.exec(f.time || "");
-      if (!m || f.direction !== dir || (liveNos || []).indexOf(f.route) >= 0) return;
-      var end = day + (Number(m[1]) * 60 + Number(m[2])) * 60000;
-      if (now < end - 30 * 60000 || now > end + 2 * 60000) return;
+      var end = at(f.time), last = f.until ? at(f.until) : end;
+      if (end === null || last === null || f.direction !== dir || (liveNos || []).indexOf(f.route) >= 0) return;
+      if (now < end - 30 * 60000 || now > last + 2 * 60000) return;
       out.push({ key: "fixed:" + f.route + ":" + f.time, dir: dir, route_no: f.route, end: end, live: true, stops: null,
-                 label: f.board + " " + f.time + "쯤 도착 · 실제로 본 시각(실시간 위치 없음)" });
+                 label: place(f.board) + " " + (f.until ? f.time + "~" + f.until + " 사이 " : f.time + "쯤 ") + (f.act || "도착") +
+                        (f.guess ? " · 시간표로 추정(실시간 위치 없음)" : " · 실제로 본 시각(실시간 위치 없음)") });
     });
     return out;
   }

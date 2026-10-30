@@ -372,6 +372,15 @@ run("fixedArrive", function () {
   eq("08:05·08:43: 안 보임", [V.fixedArriveRows(CFG, "dongmyeong", at(8, 5), []), V.fixedArriveRows(CFG, "dongmyeong", at(8, 43), [])], [[], []]);
   eq("학명리행·실시간 있으면 없음", [V.fixedArriveRows(CFG, "hakmyeong", at(8, 20), []), V.fixedArriveRows(CFG, "dongmyeong", at(8, 20), ["36-1"])], [[], []]);
   yes("화면", V.renderRow(V.fixedArriveRows(CFG, "dongmyeong", at(8, 20), [])[0], at(8, 20)).indexOf("학명리 건너2 08:40쯤 도착") >= 0);
+  // 34-1 동명정류소 17:10~17:20 사이 출발(학명리행): 16:40 부터 17:10 기준으로 세고, 17:22 까지 남긴다
+  eq("16:50: 34-1, 17:10 기준", pick(V.fixedArriveRows(CFG, "hakmyeong", at(16, 50), []), ["route_no", "end"]), [["34-1", at(17, 10)]]);
+  eq("16:35·17:23: 안 보임, 17:21: 보임", [V.fixedArriveRows(CFG, "hakmyeong", at(16, 35), []).length, V.fixedArriveRows(CFG, "hakmyeong", at(17, 23), []).length,
+     V.fixedArriveRows(CFG, "hakmyeong", at(17, 21), []).length], [0, 0, 1]);
+  yes("화면: 범위", V.renderRow(V.fixedArriveRows(CFG, "hakmyeong", at(16, 50), [])[0], at(16, 50)).indexOf("동명정류소 17:10~17:20 사이 출발") >= 0);
+  var g = V.fixedArriveRows(CFG, "hakmyeong", at(11, 20), []);
+  eq("11:20: 34-1 오전 11:30 기준(추정)", pick(g, ["route_no", "end"]), [["34-1", at(11, 30)]]);
+  var gh = V.renderRow(g[0], at(11, 20));
+  yes("화면: 추정 + 남은 시간", gh.indexOf("11:30~11:40 사이 출발 · 시간표로 추정") >= 0 && gh.indexOf("10분 00초 뒤") >= 0 && gh.indexOf("실제로 본") < 0);
 });
 
 document.getElementById("out").textContent = out.join("\n");
