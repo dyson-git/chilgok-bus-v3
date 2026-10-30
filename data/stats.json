@@ -197,16 +197,16 @@
    "slot_index": 12,
    "min_time": "19:10",
    "max_time": "19:12",
-   "avg_time": "19:12",
-   "sample_count": 4
+   "avg_time": "19:11",
+   "sample_count": 5
   },
   {
    "routeno": "급행9-3",
    "slot_index": 7,
    "min_time": "19:23",
    "max_time": "19:29",
-   "avg_time": "19:25",
-   "sample_count": 5
+   "avg_time": "19:26",
+   "sample_count": 6
   },
   {
    "routeno": "300",
