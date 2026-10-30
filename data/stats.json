@@ -117,8 +117,8 @@
    "slot_index": 4,
    "min_time": "13:26",
    "max_time": "13:29",
-   "avg_time": "13:27",
-   "sample_count": 6
+   "avg_time": "13:28",
+   "sample_count": 7
   },
   {
    "routeno": "칠곡3",
@@ -126,15 +126,15 @@
    "min_time": "13:45",
    "max_time": "13:50",
    "avg_time": "13:46",
-   "sample_count": 8
+   "sample_count": 9
   },
   {
    "routeno": "칠곡3",
    "slot_index": 8,
-   "min_time": "13:58",
+   "min_time": "13:56",
    "max_time": "14:01",
-   "avg_time": "14:00",
-   "sample_count": 3
+   "avg_time": "13:59",
+   "sample_count": 4
   },
   {
    "routeno": "칠곡3",
@@ -350,9 +350,9 @@
    "routeno": "급행9-3",
    "slot_index": 4,
    "min_time": "14:01",
-   "max_time": "14:03",
-   "avg_time": "14:01",
-   "sample_count": 7
+   "max_time": "14:04",
+   "avg_time": "14:02",
+   "sample_count": 8
   },
   {
    "routeno": "300",
