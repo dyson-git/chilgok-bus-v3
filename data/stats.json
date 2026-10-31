@@ -254,7 +254,7 @@
    "min_time": "21:30",
    "max_time": "21:35",
    "avg_time": "21:34",
-   "sample_count": 6
+   "sample_count": 7
   },
   {
    "routeno": "칠곡3",
@@ -262,7 +262,7 @@
    "min_time": "21:48",
    "max_time": "21:51",
    "avg_time": "21:49",
-   "sample_count": 6
+   "sample_count": 7
   }
  ],
  "dongmyeong": [
@@ -448,7 +448,7 @@
    "min_time": "21:23",
    "max_time": "21:27",
    "avg_time": "21:25",
-   "sample_count": 6
+   "sample_count": 7
   },
   {
    "routeno": "급행9-3",
