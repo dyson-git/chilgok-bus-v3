@@ -230,15 +230,15 @@
    "min_time": "20:15",
    "max_time": "20:20",
    "avg_time": "20:16",
-   "sample_count": 6
+   "sample_count": 7
   },
   {
    "routeno": "칠곡3",
    "slot_index": 14,
    "min_time": "20:28",
    "max_time": "20:31",
-   "avg_time": "20:30",
-   "sample_count": 5
+   "avg_time": "20:29",
+   "sample_count": 6
   },
   {
    "routeno": "급행9-3",
