@@ -411,20 +411,28 @@
    "sample_count": 3
   },
   {
+   "routeno": "300",
+   "slot_index": 4,
+   "min_time": "17:59",
+   "max_time": "18:13",
+   "avg_time": "18:03",
+   "sample_count": 7
+  },
+  {
    "routeno": "급행9-3",
    "slot_index": 6,
    "min_time": "18:01",
    "max_time": "18:06",
    "avg_time": "18:03",
-   "sample_count": 9
+   "sample_count": 10
   },
   {
-   "routeno": "300",
-   "slot_index": 4,
-   "min_time": "17:59",
-   "max_time": "18:13",
-   "avg_time": "18:04",
-   "sample_count": 6
+   "routeno": "885",
+   "slot_index": 5,
+   "min_time": "18:28",
+   "max_time": "18:28",
+   "avg_time": "18:28",
+   "sample_count": 1
   },
   {
    "routeno": "급행9-3",
