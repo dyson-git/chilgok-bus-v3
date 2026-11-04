@@ -2936,6 +2936,12 @@
     "routeid": "DGB1000009300",
     "routeno": "급행9-3",
     "source": "tago"
+   },
+   {
+    "arrival_time": "2026-11-04T14:13:10+09:00",
+    "routeid": "CGB30010",
+    "routeno": "300",
+    "source": "tago"
    }
   ]
  }
