@@ -89,7 +89,14 @@ window.V3_STOPS = {
     { direction: "dongmyeong", route: "36-1", time: "08:40", board: "학명리 건너2" },
     { direction: "hakmyeong", route: "34-1", time: "17:10", until: "17:20", board: "동명교통", act: "출발" },
     // 34-1 오전 운행은 오후와 5시간 40분 차이 나는 같은 시간표(왜관 10:20, 송산3리 11:25 / 16:00, 17:05) -> 17:10~17:20 에서 추정
-    { direction: "hakmyeong", route: "34-1", time: "11:30", until: "11:40", board: "동명교통", act: "출발", guess: true }
+    { direction: "hakmyeong", route: "34-1", time: "11:30", until: "11:40", board: "동명교통", act: "출발", guess: true },
+    // 34(송산3리 07:05 반환)도 같은 방식(반환 + 5~15분)으로 추정
+    { direction: "hakmyeong", route: "34", time: "07:10", until: "07:20", board: "동명교통", act: "출발", guess: true },
+    // 동명행: 왜관에서 와서 동명(36)·송산3리(34/34-1) 반환 전에 학명리를 지나는 시각 추정(사용자 승인 11/04, 학명리~동명 걸리는 시간은 모름)
+    { direction: "dongmyeong", route: "34", time: "06:55", until: "07:05", board: "학명리 건너2", guess: true },
+    { direction: "dongmyeong", route: "34-1", time: "11:20", until: "11:30", board: "학명리 건너2", guess: true },
+    { direction: "dongmyeong", route: "34-1", time: "17:00", until: "17:10", board: "학명리 건너2", guess: true },
+    { direction: "dongmyeong", route: "36", time: "19:55", until: "20:05", board: "학명리 건너2", guess: true }
   ],
   // 칠곡3 변형(대구 노선 id) - collector/config.py 주석의 경로
   labels: {
