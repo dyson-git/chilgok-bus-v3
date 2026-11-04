@@ -245,8 +245,8 @@
    "slot_index": 8,
    "min_time": "21:23",
    "max_time": "21:28",
-   "avg_time": "21:26",
-   "sample_count": 10
+   "avg_time": "21:25",
+   "sample_count": 11
   },
   {
    "routeno": "칠곡3",
@@ -254,15 +254,15 @@
    "min_time": "21:30",
    "max_time": "21:40",
    "avg_time": "21:35",
-   "sample_count": 10
+   "sample_count": 11
   },
   {
    "routeno": "칠곡3",
    "slot_index": 16,
-   "min_time": "21:48",
+   "min_time": "21:47",
    "max_time": "21:54",
    "avg_time": "21:49",
-   "sample_count": 10
+   "sample_count": 11
   }
  ],
  "dongmyeong": [
