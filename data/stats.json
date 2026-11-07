@@ -424,15 +424,15 @@
    "min_time": "16:01",
    "max_time": "16:08",
    "avg_time": "16:02",
-   "sample_count": 12
+   "sample_count": 13
   },
   {
    "routeno": "칠곡3",
    "slot_index": 6,
    "min_time": "16:10",
-   "max_time": "16:16",
-   "avg_time": "16:12",
-   "sample_count": 14
+   "max_time": "16:18",
+   "avg_time": "16:13",
+   "sample_count": 15
   },
   {
    "routeno": "885",
