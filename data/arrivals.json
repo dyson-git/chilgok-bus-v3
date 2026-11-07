@@ -2168,6 +2168,12 @@
     "routeid": "DGB1000009300",
     "routeno": "급행9-3",
     "source": "tago"
+   },
+   {
+    "arrival_time": "2026-11-07T12:22:47+09:00",
+    "routeid": "30020",
+    "routeno": "300",
+    "source": "bis"
    }
   ]
  },
@@ -3764,6 +3770,12 @@
     "routeid": "DGB1000009300",
     "routeno": "급행9-3",
     "source": "tago"
+   },
+   {
+    "arrival_time": "2026-11-07T13:03:16+09:00",
+    "routeid": "88510",
+    "routeno": "885",
+    "source": "bis"
    }
   ]
  }
