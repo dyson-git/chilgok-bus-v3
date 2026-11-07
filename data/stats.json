@@ -44,17 +44,25 @@
    "routeno": "칠곡3",
    "slot_index": 3,
    "min_time": "08:30",
-   "max_time": "08:45",
+   "max_time": "08:40",
    "avg_time": "08:36",
-   "sample_count": 15
+   "sample_count": 14
   },
   {
    "routeno": "칠곡3",
    "slot_index": 4,
-   "min_time": "08:46",
+   "min_time": "08:41",
    "max_time": "08:49",
-   "avg_time": "08:47",
-   "sample_count": 5
+   "avg_time": "08:46",
+   "sample_count": 7
+  },
+  {
+   "routeno": "칠곡3",
+   "slot_index": 5,
+   "min_time": "08:52",
+   "max_time": "08:52",
+   "avg_time": "08:52",
+   "sample_count": 1
   },
   {
    "routeno": "300",
@@ -70,11 +78,11 @@
    "min_time": "09:24",
    "max_time": "09:30",
    "avg_time": "09:27",
-   "sample_count": 12
+   "sample_count": 13
   },
   {
    "routeno": "칠곡3",
-   "slot_index": 5,
+   "slot_index": 6,
    "min_time": "09:50",
    "max_time": "09:55",
    "avg_time": "09:52",
@@ -82,7 +90,7 @@
   },
   {
    "routeno": "칠곡3",
-   "slot_index": 6,
+   "slot_index": 7,
    "min_time": "10:04",
    "max_time": "10:06",
    "avg_time": "10:05",
@@ -130,7 +138,7 @@
   },
   {
    "routeno": "칠곡3",
-   "slot_index": 7,
+   "slot_index": 8,
    "min_time": "13:45",
    "max_time": "13:50",
    "avg_time": "13:47",
@@ -138,7 +146,7 @@
   },
   {
    "routeno": "칠곡3",
-   "slot_index": 8,
+   "slot_index": 9,
    "min_time": "13:55",
    "max_time": "14:01",
    "avg_time": "13:58",
@@ -154,7 +162,7 @@
   },
   {
    "routeno": "칠곡3",
-   "slot_index": 9,
+   "slot_index": 10,
    "min_time": "15:01",
    "max_time": "15:10",
    "avg_time": "15:05",
@@ -162,7 +170,7 @@
   },
   {
    "routeno": "칠곡3",
-   "slot_index": 10,
+   "slot_index": 11,
    "min_time": "15:16",
    "max_time": "15:18",
    "avg_time": "15:16",
@@ -210,7 +218,7 @@
   },
   {
    "routeno": "칠곡3",
-   "slot_index": 11,
+   "slot_index": 12,
    "min_time": "18:55",
    "max_time": "19:05",
    "avg_time": "19:01",
@@ -218,7 +226,7 @@
   },
   {
    "routeno": "칠곡3",
-   "slot_index": 12,
+   "slot_index": 13,
    "min_time": "19:10",
    "max_time": "19:19",
    "avg_time": "19:12",
@@ -242,7 +250,7 @@
   },
   {
    "routeno": "칠곡3",
-   "slot_index": 13,
+   "slot_index": 14,
    "min_time": "20:13",
    "max_time": "20:20",
    "avg_time": "20:16",
@@ -250,7 +258,7 @@
   },
   {
    "routeno": "칠곡3",
-   "slot_index": 14,
+   "slot_index": 15,
    "min_time": "20:27",
    "max_time": "20:31",
    "avg_time": "20:29",
@@ -266,7 +274,7 @@
   },
   {
    "routeno": "칠곡3",
-   "slot_index": 15,
+   "slot_index": 16,
    "min_time": "21:30",
    "max_time": "21:40",
    "avg_time": "21:35",
@@ -274,7 +282,7 @@
   },
   {
    "routeno": "칠곡3",
-   "slot_index": 16,
+   "slot_index": 17,
    "min_time": "21:47",
    "max_time": "21:54",
    "avg_time": "21:49",
