@@ -2398,6 +2398,12 @@
     "routeid": "CGB30020",
     "routeno": "300",
     "source": "tago"
+   },
+   {
+    "arrival_time": "2026-11-08T17:23:16+09:00",
+    "routeid": "DGB1000009300",
+    "routeno": "급행9-3",
+    "source": "tago"
    }
   ]
  },
@@ -4145,6 +4151,12 @@
     "arrival_time": "2026-11-08T16:13:25+09:00",
     "routeid": "DGB4090003011",
     "routeno": "칠곡3",
+    "source": "tago"
+   },
+   {
+    "arrival_time": "2026-11-08T17:23:19+09:00",
+    "routeid": "GMB88510",
+    "routeno": "885",
     "source": "tago"
    }
   ]
