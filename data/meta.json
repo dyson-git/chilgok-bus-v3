@@ -1,11 +1,11 @@
 {
- "built_at": "2026-11-08T11:27:56+09:00",
+ "built_at": "2026-11-08T12:23:02+09:00",
  "rounds": {
-  "hakmyeong": 3027,
-  "dongmyeong": 3027
+  "hakmyeong": 3038,
+  "dongmyeong": 3038
  },
  "arrivals": {
-  "hakmyeong": 385,
+  "hakmyeong": 387,
   "dongmyeong": 279
  }
 }
