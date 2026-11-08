@@ -389,10 +389,10 @@
   {
    "routeno": "885",
    "slot_index": 3,
-   "min_time": "12:53",
+   "min_time": "12:51",
    "max_time": "13:03",
-   "avg_time": "12:58",
-   "sample_count": 5
+   "avg_time": "12:56",
+   "sample_count": 6
   },
   {
    "routeno": "급행9-3",
