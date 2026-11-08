@@ -2456,9 +2456,21 @@
   ],
   "2026-11-09": [
    {
-    "arrival_time": "2026-11-09T06:51:16+09:00",
+    "arrival_time": "2026-11-09T06:50:16+09:00",
+    "routeid": "DGB4090003001",
+    "routeno": "칠곡3",
+    "source": "tago"
+   },
+   {
+    "arrival_time": "2026-11-09T07:04:11+09:00",
     "routeid": "dgb:4090003001",
     "routeno": "칠곡3",
+    "source": "bis"
+   },
+   {
+    "arrival_time": "2026-11-09T07:29:23+09:00",
+    "routeid": "dgb:1000009300",
+    "routeno": "급행9-3",
     "source": "bis"
    }
   ]
@@ -4264,6 +4276,24 @@
     "routeid": "DGB4090003023",
     "routeno": "칠곡3",
     "source": "tago"
+   },
+   {
+    "arrival_time": "2026-11-09T07:13:19+09:00",
+    "routeid": "GMB88510",
+    "routeno": "885",
+    "source": "tago"
+   },
+   {
+    "arrival_time": "2026-11-09T07:46:53+09:00",
+    "routeid": "30010",
+    "routeno": "300",
+    "source": "bis"
+   },
+   {
+    "arrival_time": "2026-11-09T07:50:04+09:00",
+    "routeid": "dgb:1000009300",
+    "routeno": "급행9-3",
+    "source": "bis"
    }
   ]
  }
