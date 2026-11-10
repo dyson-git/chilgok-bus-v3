@@ -4730,6 +4730,12 @@
     "routeid": "30010",
     "routeno": "300",
     "source": "bis"
+   },
+   {
+    "arrival_time": "2026-11-10T15:02:37+09:00",
+    "routeid": "DGB4090003014",
+    "routeno": "칠곡3",
+    "source": "tago"
    }
   ]
  }
