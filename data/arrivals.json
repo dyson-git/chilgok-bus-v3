@@ -5636,6 +5636,18 @@
     "routeid": "DGB4090003011",
     "routeno": "칠곡3",
     "source": "tago"
+   },
+   {
+    "arrival_time": "2026-11-13T18:06:22+09:00",
+    "routeid": "30010",
+    "routeno": "300",
+    "source": "bis"
+   },
+   {
+    "arrival_time": "2026-11-13T18:35:39+09:00",
+    "routeid": "88510",
+    "routeno": "885",
+    "source": "bis"
    }
   ]
  }

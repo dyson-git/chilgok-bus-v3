@@ -443,14 +443,6 @@
    "sample_count": 6
   },
   {
-   "routeno": "300",
-   "slot_index": 4,
-   "min_time": "17:58",
-   "max_time": "18:13",
-   "avg_time": "18:03",
-   "sample_count": 14
-  },
-  {
    "routeno": "급행9-3",
    "slot_index": 6,
    "min_time": "18:01",
@@ -459,12 +451,20 @@
    "sample_count": 19
   },
   {
+   "routeno": "300",
+   "slot_index": 4,
+   "min_time": "17:58",
+   "max_time": "18:13",
+   "avg_time": "18:04",
+   "sample_count": 15
+  },
+  {
    "routeno": "885",
    "slot_index": 5,
    "min_time": "18:22",
-   "max_time": "18:30",
+   "max_time": "18:35",
    "avg_time": "18:27",
-   "sample_count": 9
+   "sample_count": 10
   },
   {
    "routeno": "급행9-3",
