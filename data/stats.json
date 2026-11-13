@@ -14,7 +14,7 @@
    "min_time": "07:00",
    "max_time": "07:06",
    "avg_time": "07:03",
-   "sample_count": 15
+   "sample_count": 16
   },
   {
    "routeno": "885",
@@ -30,7 +30,7 @@
    "min_time": "07:22",
    "max_time": "07:29",
    "avg_time": "07:25",
-   "sample_count": 19
+   "sample_count": 20
   },
   {
    "routeno": "885",
@@ -312,7 +312,7 @@
    "min_time": "07:08",
    "max_time": "07:17",
    "avg_time": "07:13",
-   "sample_count": 6
+   "sample_count": 7
   },
   {
    "routeno": "300",
@@ -320,7 +320,7 @@
    "min_time": "07:41",
    "max_time": "07:50",
    "avg_time": "07:44",
-   "sample_count": 11
+   "sample_count": 12
   },
   {
    "routeno": "급행9-3",
