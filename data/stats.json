@@ -198,15 +198,15 @@
    "min_time": "17:23",
    "max_time": "17:33",
    "avg_time": "17:26",
-   "sample_count": 22
+   "sample_count": 23
   },
   {
    "routeno": "885",
    "slot_index": 5,
    "min_time": "17:31",
    "max_time": "17:42",
-   "avg_time": "17:36",
-   "sample_count": 7
+   "avg_time": "17:35",
+   "sample_count": 8
   },
   {
    "routeno": "885",
