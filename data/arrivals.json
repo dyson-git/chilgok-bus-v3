@@ -3728,6 +3728,18 @@
     "routeid": "DGB1000009300",
     "routeno": "급행9-3",
     "source": "tago"
+   },
+   {
+    "arrival_time": "2026-11-16T19:57:59+09:00",
+    "routeid": "30020",
+    "routeno": "300",
+    "source": "bis"
+   },
+   {
+    "arrival_time": "2026-11-16T20:20:16+09:00",
+    "routeid": "DGB4090003011",
+    "routeno": "칠곡3",
+    "source": "tago"
    }
   ]
  },
@@ -6518,6 +6530,18 @@
     "routeid": "88510",
     "routeno": "885",
     "source": "bis"
+   },
+   {
+    "arrival_time": "2026-11-16T20:01:43+09:00",
+    "routeid": "DGB1000009300",
+    "routeno": "급행9-3",
+    "source": "tago"
+   },
+   {
+    "arrival_time": "2026-11-16T20:04:21+09:00",
+    "routeid": "DGB4090003011",
+    "routeno": "칠곡3",
+    "source": "tago"
    }
   ]
  }
