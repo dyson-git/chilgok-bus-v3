@@ -6398,6 +6398,18 @@
     "routeid": "88510",
     "routeno": "885",
     "source": "bis"
+   },
+   {
+    "arrival_time": "2026-11-16T10:51:16+09:00",
+    "routeid": "30010",
+    "routeno": "300",
+    "source": "bis"
+   },
+   {
+    "arrival_time": "2026-11-16T11:09:04+09:00",
+    "routeid": "DGB4090003001",
+    "routeno": "칠곡3",
+    "source": "tago"
    }
   ]
  }
