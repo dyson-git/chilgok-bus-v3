@@ -14,7 +14,7 @@
    "min_time": "07:00",
    "max_time": "07:06",
    "avg_time": "07:03",
-   "sample_count": 21
+   "sample_count": 22
   },
   {
    "routeno": "885",
@@ -30,7 +30,7 @@
    "min_time": "07:22",
    "max_time": "07:29",
    "avg_time": "07:25",
-   "sample_count": 25
+   "sample_count": 26
   },
   {
    "routeno": "885",
@@ -328,7 +328,7 @@
    "min_time": "07:41",
    "max_time": "07:50",
    "avg_time": "07:44",
-   "sample_count": 16
+   "sample_count": 17
   },
   {
    "routeno": "급행9-3",
