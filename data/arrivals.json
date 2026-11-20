@@ -4272,9 +4272,15 @@
     "source": "tago"
    },
    {
-    "arrival_time": "2026-11-20T08:38:09+09:00",
-    "routeid": "dgb:4090003001",
+    "arrival_time": "2026-11-20T08:40:19+09:00",
+    "routeid": "DGB4090003001",
     "routeno": "칠곡3",
+    "source": "tago"
+   },
+   {
+    "arrival_time": "2026-11-20T09:28:23+09:00",
+    "routeid": "dgb:1000009300",
+    "routeno": "급행9-3",
     "source": "bis"
    }
   ]
