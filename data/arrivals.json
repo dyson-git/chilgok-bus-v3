@@ -4895,6 +4895,14 @@
     "routeno": "칠곡3",
     "source": "bis"
    }
+  ],
+  "2026-11-24": [
+   {
+    "arrival_time": "2026-11-24T06:51:17+09:00",
+    "routeid": "dgb:4090003001",
+    "routeno": "칠곡3",
+    "source": "bis"
+   }
   ]
  },
  "dongmyeong": {
@@ -8512,6 +8520,20 @@
    {
     "arrival_time": "2026-11-23T21:25:43+09:00",
     "routeid": "DGB4090003011",
+    "routeno": "칠곡3",
+    "source": "tago"
+   },
+   {
+    "arrival_time": "2026-11-23T22:04:03+09:00",
+    "routeid": "DGB1000009300",
+    "routeno": "급행9-3",
+    "source": "tago"
+   }
+  ],
+  "2026-11-24": [
+   {
+    "arrival_time": "2026-11-24T06:46:22+09:00",
+    "routeid": "DGB4090003023",
     "routeno": "칠곡3",
     "source": "tago"
    }
