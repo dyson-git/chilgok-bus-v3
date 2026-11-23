@@ -4830,10 +4830,10 @@
     "source": "bis"
    },
    {
-    "arrival_time": "2026-11-23T17:28:28+09:00",
-    "routeid": "dgb:1000009300",
+    "arrival_time": "2026-11-23T17:24:13+09:00",
+    "routeid": "DGB1000009300",
     "routeno": "급행9-3",
-    "source": "bis"
+    "source": "tago"
    },
    {
     "arrival_time": "2026-11-23T17:33:41+09:00",
@@ -8429,6 +8429,18 @@
     "arrival_time": "2026-11-23T17:23:19+09:00",
     "routeid": "GMB88510",
     "routeno": "885",
+    "source": "tago"
+   },
+   {
+    "arrival_time": "2026-11-23T18:06:31+09:00",
+    "routeid": "DGB1000009300",
+    "routeno": "급행9-3",
+    "source": "tago"
+   },
+   {
+    "arrival_time": "2026-11-23T18:08:10+09:00",
+    "routeid": "CGB30010",
+    "routeno": "300",
     "source": "tago"
    }
   ]
