@@ -4916,9 +4916,21 @@
     "source": "tago"
    },
    {
-    "arrival_time": "2026-11-24T08:39:26+09:00",
-    "routeid": "dgb:4090003001",
+    "arrival_time": "2026-11-24T08:40:19+09:00",
+    "routeid": "DGB4090003001",
     "routeno": "칠곡3",
+    "source": "tago"
+   },
+   {
+    "arrival_time": "2026-11-24T09:11:01+09:00",
+    "routeid": "CGB30020",
+    "routeno": "300",
+    "source": "tago"
+   },
+   {
+    "arrival_time": "2026-11-24T09:28:10+09:00",
+    "routeid": "dgb:1000009300",
+    "routeno": "급행9-3",
     "source": "bis"
    }
   ]
