@@ -8590,6 +8590,12 @@
     "routeid": "88510",
     "routeno": "885",
     "source": "bis"
+   },
+   {
+    "arrival_time": "2026-11-24T10:54:25+09:00",
+    "routeid": "CGB30010",
+    "routeno": "300",
+    "source": "tago"
    }
   ]
  }
