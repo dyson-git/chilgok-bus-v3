@@ -9188,10 +9188,16 @@
     "source": "tago"
    },
    {
-    "arrival_time": "2026-11-26T14:00:36+09:00",
-    "routeid": "dgb:1000009300",
+    "arrival_time": "2026-11-26T14:03:01+09:00",
+    "routeid": "DGB1000009300",
     "routeno": "급행9-3",
-    "source": "bis"
+    "source": "tago"
+   },
+   {
+    "arrival_time": "2026-11-26T14:18:10+09:00",
+    "routeid": "CGB30010",
+    "routeno": "300",
+    "source": "tago"
    }
   ]
  }
