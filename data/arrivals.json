@@ -5278,6 +5278,18 @@
     "routeid": "dgb:1000009300",
     "routeno": "급행9-3",
     "source": "bis"
+   },
+   {
+    "arrival_time": "2026-11-26T12:22:22+09:00",
+    "routeid": "30020",
+    "routeno": "300",
+    "source": "bis"
+   },
+   {
+    "arrival_time": "2026-11-26T13:06:31+09:00",
+    "routeid": "88520",
+    "routeno": "885",
+    "source": "bis"
    }
   ]
  },
