@@ -4,7 +4,7 @@
    "routeno": "칠곡3",
    "slot_index": 1,
    "min_time": "06:45",
-   "max_time": "06:51",
+   "max_time": "06:50",
    "avg_time": "06:48",
    "sample_count": 30
   },
@@ -14,7 +14,7 @@
    "min_time": "07:00",
    "max_time": "07:06",
    "avg_time": "07:02",
-   "sample_count": 28
+   "sample_count": 29
   },
   {
    "routeno": "885",
@@ -30,7 +30,7 @@
    "min_time": "07:23",
    "max_time": "07:29",
    "avg_time": "07:25",
-   "sample_count": 29
+   "sample_count": 30
   },
   {
    "routeno": "885",
@@ -320,7 +320,7 @@
    "min_time": "07:08",
    "max_time": "07:17",
    "avg_time": "07:12",
-   "sample_count": 12
+   "sample_count": 13
   },
   {
    "routeno": "300",
