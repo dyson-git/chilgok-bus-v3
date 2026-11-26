@@ -110,7 +110,7 @@
    "min_time": "11:22",
    "max_time": "11:29",
    "avg_time": "11:26",
-   "sample_count": 29
+   "sample_count": 30
   },
   {
    "routeno": "300",
@@ -400,7 +400,7 @@
    "min_time": "11:59",
    "max_time": "12:06",
    "avg_time": "12:02",
-   "sample_count": 26
+   "sample_count": 27
   },
   {
    "routeno": "885",
