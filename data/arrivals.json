@@ -9442,6 +9442,12 @@
     "routeid": "GMB88510",
     "routeno": "885",
     "source": "tago"
+   },
+   {
+    "arrival_time": "2026-11-27T14:06:39+09:00",
+    "routeid": "DGB1000009300",
+    "routeno": "급행9-3",
+    "source": "tago"
    }
   ]
  }

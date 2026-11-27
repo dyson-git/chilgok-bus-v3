@@ -414,9 +414,9 @@
    "routeno": "급행9-3",
    "slot_index": 4,
    "min_time": "13:58",
-   "max_time": "14:04",
+   "max_time": "14:06",
    "avg_time": "14:02",
-   "sample_count": 22
+   "sample_count": 23
   },
   {
    "routeno": "300",
