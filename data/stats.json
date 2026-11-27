@@ -110,15 +110,15 @@
    "min_time": "11:22",
    "max_time": "11:29",
    "avg_time": "11:26",
-   "sample_count": 29
+   "sample_count": 30
   },
   {
    "routeno": "300",
    "slot_index": 2,
    "min_time": "12:13",
    "max_time": "12:26",
-   "avg_time": "12:21",
-   "sample_count": 25
+   "avg_time": "12:20",
+   "sample_count": 26
   },
   {
    "routeno": "885",
